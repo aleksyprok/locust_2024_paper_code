@@ -181,7 +181,10 @@ latex_files/*.fdb_latexmk
 latex_files/*.fls
 latex_files/*.synctex.gz
 output_data/scan_tf_rcoil_inner_processed_bugged
-input_data/
-output_data/
-plots/
+input_data/*
+output_data/*
+plots/*
+!plots/README.md
+!input_data/README.md
+!output_data/README.md
 .DS_Store
