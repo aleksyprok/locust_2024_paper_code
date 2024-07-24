@@ -1,8 +1,13 @@
 # nuclear_fusion_2024_code
 
-**Warning:** This repository is >25GB so make sure you have enough space before cloning. Ensure that [Git LFS](https://git-lfs.com/) is installed to download the files in the `input_data` directory.
+The codebase associated with our research, as detailed in the paper available for review and use at the following GitHub repository: <https://github.com/aleksyprok/Prokopyszyn_et_al_Nuclear_Fusion_IAEA_2023>.
 
-The codebase associated with our research, as detailed in the paper available for review and use at the following GitHub repository: <https://github.com/aleksyprok/Prokopyszyn_et_al_Nuclear_Fusion_IAEA_2023>
+### External Data Storage
+
+To keep this repository manageable, we have stored large datasets on Google Drive and OneDrive. You can access the necessary data through the following links:
+
+- **Input Data and Plots**: Available on [Google Drive](https://drive.google.com/drive/folders/19O-Q3VZ2t9bzik9bUeZ-YEsVlpDDwWD7?usp=share_link).
+- **Simulation Output Data**: Available on [OneDrive](https://stfc365-my.sharepoint.com/:f:/g/personal/alexander_prokopyszyn_stfc_ac_uk/Ev5nc3ZpORVPqvzkBBQJYCUBEnaOCg2FhIZq7Fq3rOzMSA?email=alex.prokopyszyn%40ukaea.uk&e=ZBfYRV). Note that access to this OneDrive folder requires permission, as it is stored on a work account and exceeds 30 GB.
 
 ## Repository Structure
 
@@ -68,8 +73,6 @@ This repository is organized as follows:
 
  ## Installation instructions:
 
-  - Ensure `git` and `git-lfs` are installed on your machine.
-  - Clone the repository. I recommend checking that the the large files have downloaded correctly by looking at the files in `input_data`.
   - To run the python scripts you need to have python3.9+ installed.
   - Setup a virtual environment with e.g. "python3 -m venv venv".
   - Activate the environment with e.g. "source venv/bin/activate"
