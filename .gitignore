@@ -184,3 +184,4 @@ output_data/scan_tf_rcoil_inner_processed_bugged
 input_data/
 output_data/
 plots/
+.DS_Store
