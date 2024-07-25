@@ -762,9 +762,9 @@ for ((n=0; n<num_runs; n++)); do
     sed -i "s/real( gpu ),  dimension(nion),      parameter :: Ai     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Ai     = \[$Ai_str\]/" $prec_file
     sed -i "s/real( gpu ),  dimension(nion),      parameter :: Zi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Zi     = \[$Zi_str\]/" $prec_file
 
-    # make clean
-    # make FLAGS="$FLAGS_BASE" -j
-    # mv -f "locust" "locust_"$run_name"_"$n
+    make clean
+    make FLAGS="$FLAGS_BASE" -j
+    mv -f "locust" "locust_"$run_name"_"$n
 
 done
 
