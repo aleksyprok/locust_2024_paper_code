@@ -450,6 +450,7 @@ dplot=1
 dt0="none"
 unbor=0
 timax="none"
+run_category=8
 dt0s_unique=("1.0e-09_gpu" "1.0e-08_gpu" "1.0e-07_gpu" "1.0e-06_gpu" "1.0e-05_gpu")
 unbors_unique=(1 10 100 1000 10000)
 timaxs_unique=("1.0e-04_gpu" "1.0e-03_gpu" "1.0e-02_gpu" "1.0e-01_gpu" "1.0e+00_gpu")
@@ -537,9 +538,9 @@ for ((n=0; n<num_runs; n++)); do
 
     echo "n="$n
     # If run category is not x skip
-    # if [[ ${run_categories[$n]} -ne 7 ]]; then
-    #     continue
-    # fi
+    if [[ ${run_categories[$n]} -ne 8 ]]; then
+        continue
+    fi
 
     rcoil=${rcoils[$n]}
     rcoil_inner=${rcoils_inner[$n]}
@@ -761,9 +762,9 @@ for ((n=0; n<num_runs; n++)); do
     sed -i "s/real( gpu ),  dimension(nion),      parameter :: Ai     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Ai     = \[$Ai_str\]/" $prec_file
     sed -i "s/real( gpu ),  dimension(nion),      parameter :: Zi     = \[x\]/real( gpu ),  dimension(nion),      parameter :: Zi     = \[$Zi_str\]/" $prec_file
 
-    make clean
-    make FLAGS="$FLAGS_BASE" -j
-    mv -f "locust" "locust_"$run_name"_"$n
+    # make clean
+    # make FLAGS="$FLAGS_BASE" -j
+    # mv -f "locust" "locust_"$run_name"_"$n
 
 done
 
