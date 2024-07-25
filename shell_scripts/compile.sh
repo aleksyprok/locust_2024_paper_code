@@ -454,7 +454,8 @@ run_category=8
 dt0s_unique=("1.0e-09_gpu" "1.0e-08_gpu" "1.0e-07_gpu" "1.0e-06_gpu" "1.0e-05_gpu")
 unbors_unique=(1 10 100 1000 10000)
 timaxs_unique=("1.0e-04_gpu" "1.0e-03_gpu" "1.0e-02_gpu" "1.0e-01_gpu" "1.0e+00_gpu")
-for i in ${#dt0s_unique[@]}; do
+num_dt0s=${#dt0s_unique[@]}
+for ((i = 0; i < num_dt0s; i++)); do
     dt0="${dt0s_unique[$i]}"
     unbor="${unbors_unique[$i]}"
     timax="${timaxs_unique[$i]}"
