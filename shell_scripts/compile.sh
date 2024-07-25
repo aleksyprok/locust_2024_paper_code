@@ -21,7 +21,7 @@ home_dir=$HOME
 prec_file=$home_dir"/locust/prec_mod.f90"
 mesh_file="SPP-001-1.cdb.locust"
 run_name="FEC_2024"
-spr_strings_unique=("SPR-045-14" "SPR-045-16" "SPR046_16b")
+spr_strings_unique=("SPR-045-14" "SPR-045-16")
 
 niter=2
 threadsPerBlock=256
@@ -291,6 +291,7 @@ for bscale in "${bscales_unique[@]}"; do
         bplasmas+=("$bplasma")
         rwm_controls+=("$rwm_control")
         rmps+=("$rmp")
+	spr_strings+=("$spr_string")
         run_categories+=("$run_category")
 done
 
@@ -339,19 +340,19 @@ rcoil=9.0
 rcoil_inner=0.75
 ncoil=16
 bripple=1
-toroidal_mode=3
+toroidal_mode=-3
 coil_set="efcc"
-current=
+current=90
 response=0
-phase=0
+phase="020.0"
 gain_value=0
 bscale=0
-bplasma=0
+bplasma=1
 rwm_control=0
-rmp=0
+rmp=1
 spr_string="none"
 run_category=7
-for spr_string in "${spr_strings[@]}"; do
+for spr_string in "${spr_strings_unique[@]}"; do
     ncoils+=("$ncoil")
     rcoils+=("$rcoil")
     rcoils_inner+=("$rcoil_inner")
@@ -366,6 +367,7 @@ for spr_string in "${spr_strings[@]}"; do
     bplasmas+=("$bplasma")
     rwm_controls+=("$rwm_control")
     rmps+=("$rmp")
+    spr_strings+=("$spr_string")
     run_categories+=("$run_category")
 done
 
@@ -424,8 +426,9 @@ cd $home_dir"/locust"
 num_runs=${#rcoils[@]}
 for ((n=0; n<num_runs; n++)); do
 
+    echo "n="$n
     # If run category is not x skip
-    # if [[ ${run_categories[$n]} -ne 3 ]]; then
+    # if [[ ${run_categories[$n]} -ne 7 ]]; then
     #     continue
     # fi
 
