@@ -1,5 +1,5 @@
 """
-The module contains routines associated with the energy flux on the PFCs.
+The module contains routines associated with the energy flux on the PFCs (plasma facing components).
 It also contains information about the distribution of the energy flux on the PFCs.
 """
 
