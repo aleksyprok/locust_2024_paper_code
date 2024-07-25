@@ -26,9 +26,6 @@ spr_strings_unique=("SPR-045-14" "SPR-045-16")
 niter=2
 threadsPerBlock=256
 blocksPerGrid=256
-timax="1.0_gpu"
-UNBOR=1000
-dt0="1.0e-06_gpu"
 
 # Axisymmetric simulations
 rcoil=0
@@ -46,6 +43,11 @@ bplasma=0
 rwm_control=0
 rmp=0
 spr_string="SPR-045-16"
+dplot=0
+timax="1.0_gpu"
+unbor=1000
+dt0="1.0e-06_gpu"
+timax="none"
 run_category=1
 rcoils+=("$rcoil")
 rcoils_inner+=("$rcoil_inner")
@@ -62,6 +64,10 @@ bplasmas+=("$bplasma")
 rwm_controls+=("$rwm_control")
 rmps+=("$rmp")
 spr_strings+=("$spr_string")
+dplots+=("$dplot")
+timaxs+=("$timax")
+unbors+=("$unbor")
+dt0s+=("$dt0")
 run_categories+=("$run_category")
 
 # Ripple simulations
@@ -80,6 +86,11 @@ bplasma=0
 rwm_control=0
 rmp=0
 spr_string="SPR-045-16"
+dplot=0
+timax="1.0_gpu"
+unbor=1000
+dt0="1.0e-06_gpu"
+timax="none"
 run_category=2
 ncoils_unique=(12 16 18)
 rcoils_unique=("7.0" "7.25" "7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0")
@@ -100,6 +111,10 @@ for ncoil in "${ncoils_unique[@]}"; do
         rwm_controls+=("$rwm_control")
         rmps+=("$rmp")
         spr_strings+=("$spr_string")
+        dplots+=("$dplot")
+        timaxs+=("$timax")
+        unbors+=("$unbor")
+        dt0s+=("$dt0")
         run_categories+=("$run_category")
     done
 done
@@ -120,6 +135,11 @@ bplasma=1
 rwm_control=0
 rmp=1
 spr_string="SPR-045-16"
+dplot=0
+timax="1.0_gpu"
+unbor=1000
+dt0="1.0e-06_gpu"
+timax="none"
 run_category=3
 phases_unique=("000.00" "045.00" "090.00" "135.00"
                "180.00" "225.00" "270.00" "315.00")
@@ -173,6 +193,10 @@ for coil_set in "${coil_sets_unique[@]}"; do
                     rwm_controls+=("$rwm_control")
                     rmps+=("$rmp")
                     spr_strings+=("$spr_string")
+                    dplots+=("$dplot")
+                    timaxs+=("$timax")
+                    unbors+=("$unbor")
+                    dt0s+=("$dt0")
                     run_categories+=("$run_category")
                 done
             done
@@ -196,6 +220,11 @@ bplasma=1
 rwm_control=0
 rmp=1
 spr_string="SPR-045-16"
+dplot=0
+timax="1.0_gpu"
+unbor=1000
+dt0="1.0e-06_gpu"
+timax="none"
 run_category=4
 toroidal_modes_unique=(-2 -3 -4)
 coil_sets_unique=("efcc" "rwm")
@@ -252,6 +281,10 @@ for coil_set in "${coil_sets_unique[@]}"; do
                 rwm_controls+=("$rwm_control")
                 rmps+=("$rmp")
                 spr_strings+=("$spr_string")
+                dplots+=("$dplot")
+                timaxs+=("$timax")
+                unbors+=("$unbor")
+                dt0s+=("$dt0")
                 run_categories+=("$run_category")
             done
         done
@@ -274,25 +307,34 @@ bplasma=1
 rwm_control=0
 rmp=1
 spr_string="SPR-045-16"
+dplot=0
+timax="1.0_gpu"
+unbor=1000
+dt0="1.0e-06_gpu"
+timax="none"
 run_category=5
 bscales_unique=(1 10 100 1000)
 for bscale in "${bscales_unique[@]}"; do
-        ncoils+=("$ncoil")
-        rcoils+=("$rcoil")
-        rcoils_inner+=("$rcoil_inner")
-        bripples+=("$bripple")
-        toroidal_modes+=("$toroidal_mode")
-        coil_sets+=("$coil_set")
-        currents+=("$current")
-        responses+=("$response")
-        phases+=("$phase")
-        gain_values+=("$gain_value")
-        bscales+=("$bscale")
-        bplasmas+=("$bplasma")
-        rwm_controls+=("$rwm_control")
-        rmps+=("$rmp")
-	spr_strings+=("$spr_string")
-        run_categories+=("$run_category")
+    ncoils+=("$ncoil")
+    rcoils+=("$rcoil")
+    rcoils_inner+=("$rcoil_inner")
+    bripples+=("$bripple")
+    toroidal_modes+=("$toroidal_mode")
+    coil_sets+=("$coil_set")
+    currents+=("$current")
+    responses+=("$response")
+    phases+=("$phase")
+    gain_values+=("$gain_value")
+    bscales+=("$bscale")
+    bplasmas+=("$bplasma")
+    rwm_controls+=("$rwm_control")
+    rmps+=("$rmp")
+    spr_strings+=("$spr_string")
+    dplots+=("$dplot")
+    timaxs+=("$timax")
+    unbors+=("$unbor")
+    dt0s+=("$dt0")
+    run_categories+=("$run_category")
 done
 
 # Ripple simulations - scan in TF_Rcoil_inner
@@ -311,6 +353,10 @@ bplasma=0
 rwm_control=0
 rmp=0
 spr_string="SPR-045-16"
+dplot=0
+timax="1.0_gpu"
+unbor=1000
+dt0="1.0e-06_gpu"
 run_category=6
 rcoils_unique=("7.5" "100.0")
 rcoils_inner_unique=("0.0" "0.25" "0.5" "0.75" "1.0" "1.25" "1.50")
@@ -331,6 +377,10 @@ for rcoil in "${rcoils_unique[@]}"; do
         rwm_controls+=("$rwm_control")
         rmps+=("$rmp")
         spr_strings+=("$spr_string")
+        dplots+=("$dplot")
+        timaxs+=("$timax")
+        unbors+=("$unbor")
+        dt0s+=("$dt0")
         run_categories+=("$run_category")
     done
 done
@@ -351,6 +401,11 @@ bplasma=1
 rwm_control=0
 rmp=1
 spr_string="none"
+dplot=0
+timax="1.0_gpu"
+unbor=1000
+dt0="1.0e-06_gpu"
+timax="none"
 run_category=7
 for spr_string in "${spr_strings_unique[@]}"; do
     ncoils+=("$ncoil")
@@ -368,8 +423,62 @@ for spr_string in "${spr_strings_unique[@]}"; do
     rwm_controls+=("$rwm_control")
     rmps+=("$rmp")
     spr_strings+=("$spr_string")
+    dplots+=("$dplot")
+    timaxs+=("$timax")
+    unbors+=("$unbor")
+    dt0s+=("$dt0")
     run_categories+=("$run_category")
 done
+
+# Make DPLOTS of the full 3D simulations
+rcoil=9.0
+rcoil_inner=0.75
+ncoil=16
+bripple=1
+toroidal_mode=-3
+coil_set="efcc"
+current=90
+response=0
+phase="020.0"
+gain_value=0
+bscale=0
+bplasma=1
+rwm_control=0
+rmp=1
+spr_string="SPR-045-16"
+dplot=1
+dt0="none"
+unbor=0
+timax="none"
+dt0s_unique=("1.0e-09_gpu" "1.0e-08_gpu" "1.0e-07_gpu" "1.0e-06_gpu" "1.0e-05_gpu")
+unbors_unique=(1 10 100 1000 10000)
+timaxs_unique=("1.0e-04_gpu" "1.0e-03_gpu" "1.0e-02_gpu" "1.0e-01_gpu" "1.0e+00_gpu")
+for i in ${#dt0s_unique[@]}; do
+    dt0="${dt0s_unique[$i]}"
+    unbor="${unbors_unique[$i]}"
+    timax="${timaxs_unique[$i]}"
+    ncoils+=("$ncoil")
+    rcoils+=("$rcoil")
+    rcoils_inner+=("$rcoil_inner")
+    bripples+=("$bripple")
+    toroidal_modes+=("$toroidal_mode")
+    coil_sets+=("$coil_set")
+    currents+=("$current")
+    responses+=("$response")
+    phases+=("$phase")
+    gain_values+=("$gain_value")
+    bscales+=("$bscale")
+    bplasmas+=("$bplasma")
+    rwm_controls+=("$rwm_control")
+    rmps+=("$rmp")
+    spr_strings+=("$spr_string")
+    dplots+=("$dplot")
+    timaxs+=("$timax")
+    unbors+=("$unbor")
+    dt0s+=("$dt0")
+    run_categories+=("$run_category")
+done
+run_category=8
 
 if [[ $device == "csd3" ]]; then
     module purge
@@ -447,6 +556,10 @@ for ((n=0; n<num_runs; n++)); do
     rwm_control=${rwm_controls[$n]}
     rmp=${rmps[$n]}
     spr_string=${spr_strings[$n]}
+    unbor=${unbors[$n]}
+    dt0=${dt0s[$n]}
+    timax=${timaxs[$n]}
+    dplot=${dplots[$n]}
     run_category=${run_categories[$n]}
     echo "ncoil="$ncoil
     echo "rcoil="$rcoil
@@ -463,6 +576,10 @@ for ((n=0; n<num_runs; n++)); do
     echo "rwm_control="$rwm_control
     echo "rmp="$rmp
     echo "spr_string="$spr_string
+    echo "unbor="$unbor
+    echo "dt0="$dt0
+    echo "timax="$timax
+    echo "dplot="$dplot
     echo "run_category="$run_category
 
     toroidal_mode_abs=$(absolute_value $toroidal_mode)
@@ -471,7 +588,7 @@ for ((n=0; n<num_runs; n++)); do
 
     FLAGS_BASE="-DCONLY -DPFCMOD -DTOKHEAD -DFSTATE -DLEIID=6 -DSTDOUT \
                 -DSMALLEQ -DOPENTRACK -DOPENTERM -DPSIT=0.7 \
-                -DNOTUNE -DUNBOR="$UNBOR" \
+                -DNOTUNE -DUNBOR="$unbor" \
                 -DTETALL -DSOLCOL \
                 -DRFORCE -DBP -DTIMAX="$timax" -DWREAL -DWLIST"
     if [[ $bplasma == 1 ]]; then
@@ -490,6 +607,9 @@ for ((n=0; n<num_runs; n++)); do
     fi
     if [[ $bripple == 1 ]]; then
         FLAGS_BASE=$FLAGS_BASE" -DBRIPPLE"
+    fi
+    if [[ $dplot == 1 ]]; then
+        FLAGS_BASE=$FLAGS_BASE" -DPLOT=100"
     fi
     echo $FLAGS_BASE
 
@@ -513,6 +633,12 @@ for ((n=0; n<num_runs; n++)); do
     cp -f \
     $input_dir"/"$ptcle_file \
     $home_dir"/locust."$tokamak"/InputFiles/."
+    if [[ $dplot == 1 ]]; then
+        ptcle_file_dplot=$spr_string"_markers_dplot_100.dat"
+        cp -f \
+        $input_dir"/"$ptcle_file \
+        $home_dir"/locust."$tokamak"/InputFiles/."
+    fi
 
     SRC="TF_Ncoil = 00"
     DST="TF_Ncoil = "$ncoil
@@ -657,5 +783,9 @@ echo "Length of bplasmas: ${#bplasmas[@]}"
 echo "Length of rwm_controls: ${#rwm_controls[@]}"
 echo "Length of rmps: ${#rmps[@]}"
 echo "Length of spr_strings: ${#spr_strings[@]}"
+echo "Length of unbors: ${#unbors[@]}"
+echo "Length of dt0s: ${#dt0s[@]}"
+echo "Length of timaxs: ${#timaxs[@]}"
+echo "Length of dplots: ${#dplots[@]}"
 echo "Length of run_categories: ${#run_categories[@]}"
 
