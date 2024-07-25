@@ -480,7 +480,6 @@ for ((i = 0; i < num_dt0s; i++)); do
     dt0s+=("$dt0")
     run_categories+=("$run_category")
 done
-run_category=8
 
 if [[ $device == "csd3" ]]; then
     module purge
