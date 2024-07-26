@@ -36,7 +36,8 @@ SPECIAL_NODES = (16, 55, 138, 178)
 
 def calc_energy_flux(run_i, output_dir_i,
                      remap_phi_n=None,
-                     previous_run=None):
+                     previous_run=None,
+                     free_space=True):
     """
     This function calculates the energy flux for a given run.
     And plots some of the data along the way.
@@ -77,7 +78,8 @@ def calc_energy_flux(run_i, output_dir_i,
     # run_i.flux.conf_band_total = 0.1
     run_i.flux.max_energy_1d = np.max(run_i.flux.energy_1d)
     run_i.flux.max_energy_2d = np.max(run_i.flux.energy_2d)
-    run_i.free_space()
+    if free_space:
+        run_i.free_space()
     paper_plots_extra.save_attributes_to_file(run_i, output_dir_i,
                                                 indent=4)
 
@@ -501,6 +503,52 @@ def plot_rwm_runs(all_runs):
                 dpi=300)
     plt.close(fig)
 
+def spr_045_14_vs_spr_045_16():
+    """
+    This function plots the energy flux distribution for an SPR-045-14 run vs an
+    SPR-045-16 run.
+    """
+
+    runs_path = os.path.join(REPOSITORY_PATH, "output_data",
+                             "full_3d_field_spr_045_14_and_16_processed")
+    runs = run.create_runs_list(runs_path)
+    output_dir = os.path.join(REPOSITORY_PATH, "plots", "spr_045_14_vs_spr_045_16")
+    energy_flux_dict = {}
+    for run_i in runs:
+        if "SPR-045-14" in run_i.log.eqdsk_fname:
+            spr_string = "SPR-045-14"
+        elif "SPR-045-16" in run_i.log.eqdsk_fname:
+            spr_string = "SPR-045-16"
+        else:
+            raise ValueError("Could not determine run type")
+        output_dir_i = os.path.join(output_dir, spr_string)
+        os.makedirs(output_dir_i, exist_ok=True)
+        calc_energy_flux(run_i, output_dir_i,
+                         free_space=False)
+        energy_flux_dict[spr_string] = run_i.flux.energy_1d
+
+    fig, ax = plt.subplots()
+    for spr_string, energy_flux in energy_flux_dict.items():
+        ax.plot(runs[0].flux.s_theta_1d, energy_flux,
+                label=spr_string)
+    ax.legend()
+    clrs = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
+    symbols = ['+', 'x', 'o', 's']
+    y_mid = 0.5 * (ax.get_ylim()[1] - ax.get_ylim()[0])
+    for i, s_nod_i in enumerate(runs[0].wall.special_nodes):
+        ax.axvline(x=runs[0].wall.s_nodes[s_nod_i],
+                   color=clrs[i])
+        ax.plot(runs[0].wall.s_nodes[s_nod_i], y_mid,
+                color=clrs[i],
+                marker=symbols[i])
+    ax.set_xlabel(r'$s_\theta$ [m]')
+    ax.set_ylabel(r'Energy Flux [MW m$^{-2}$]')
+    fig.savefig(output_dir + '/energy_flux_spr_045_14_vs_spr_045_16.png',
+                bbox_inches='tight', dpi=300)
+    fig.savefig(output_dir + '/energy_flux_spr_045_14_vs_spr_045_16.pdf',
+                bbox_inches='tight')
+    plt.close('all')
+
 def plot_background_plasma_curves():
     """
     This function plots the background plasma curves to produce the 
@@ -547,19 +595,21 @@ def plot_background_plasma_curves():
     fig.savefig(output_path + '.png',
                 bbox_inches='tight',
                 dpi=300)
+    plt.close('all')
 
 
 if __name__ == "__main__":
     start_time = time.time()
     RUNS = run.create_runs_list(RUNS_DIRECTORY)
-    paper_plots_3d.coil_plot_3d(gfile_path=GFILE_PATH)
-    plot_ripple_runs(RUNS)
-    plot_rmp_runs(RUNS)
-    plot_rmp_distribution(RUNS)
-    plot_rwm_runs(RUNS)
-    plot_background_plasma_curves()
-    ripple_check.plot_ripple_field()
-    paper_plots_extra.tf_coil_inner_limb_scan()
+    # paper_plots_3d.coil_plot_3d(gfile_path=GFILE_PATH)
+    # plot_ripple_runs(RUNS)
+    # plot_rmp_runs(RUNS)
+    # plot_rmp_distribution(RUNS)
+    # plot_rwm_runs(RUNS)
+    # plot_background_plasma_curves()
+    # ripple_check.plot_ripple_field()
+    # paper_plots_extra.tf_coil_inner_limb_scan()
+    spr_045_14_vs_spr_045_16()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
