@@ -582,6 +582,21 @@ def spr_045_14_vs_spr_045_16():
                                 cmap=cmap)
     ax.plot(run0.wall.r, run0.wall.z, 'k',
             linewidth=2)
+    ax.annotate(r'$s_\theta=0$', 
+                xy=(run0.wall.r[0], run0.wall.z[0]), 
+                xytext=(8, run0.wall.z[0]),
+                arrowprops=dict(facecolor='black', arrowstyle='->',
+                                linewidth=1.5))
+    ax.annotate(r'Prompt losses', 
+                xy=(2.6, 6.3), 
+                xytext=(8, 6.3),
+                arrowprops=dict(facecolor='black', arrowstyle='->',
+                                lw=1.5))
+    ax.annotate(r'Collisional losses', 
+                xy=(6, -8.5), 
+                xytext=(8, -8.5),
+                arrowprops=dict(facecolor='black', arrowstyle='->',
+                                lw=1.5))
     for i in range(num_edges):
         color = scalar_map.to_rgba(new_energy_flux_mid[i])
         alpha = new_energy_flux_mid[i]/np.max(new_energy_flux_mid)
