@@ -542,7 +542,7 @@ def spr_045_14_vs_spr_045_16():
                 color=clrs[i],
                 marker=symbols[i])
     ax.set_xlabel(r'$s_\theta$ [m]')
-    ax.set_ylabel(r'Energy Flux [MW m$^{-2}$]')
+    ax.set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
     fig.savefig(output_dir + '/energy_flux_spr_045_14_vs_spr_045_16.png',
                 bbox_inches='tight', dpi=300)
     fig.savefig(output_dir + '/energy_flux_spr_045_14_vs_spr_045_16.pdf',
