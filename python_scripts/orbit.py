@@ -83,7 +83,20 @@ def generate_markers():
     probabilities = run0.markers.stopped.weight
     probabilities *= (run0.markers.stopped.z > 6)
     probabilities /= np.sum(probabilities)
-    upper_indices = np.random.choice(len(values), size=3, replace=False, p=probabilities)
+    upper_indices = np.random.choice(len(probabilities),
+                                     size=3,
+                                     replace=False,
+                                     p=probabilities)
+    
+    probabilities = run0.markers.stopped.weight
+    probabilities *= (run0.markers.stopped.z < -6)
+    probabilities /= np.sum(probabilities)
+    lower_indices = np.random.choice(len(probabilities),
+                                     size=3,
+                                     replace=False,
+                                     p=probabilities)
+    
+    indices = np.concatenate((upper_indices, lower_indices))
     
 
 if __name__ == "__main__":
