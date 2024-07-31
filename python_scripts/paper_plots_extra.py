@@ -346,10 +346,32 @@ def csv_of_key_values():
         file.write(f"Total fusion power = {total_fusion_power:.2f} GW\n")
         file.write(f"Total alpha power = {total_alpha_power:.2f} GW\n")
 
+    repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    gfile_path = os.path.join(repository_path, "input_data", "SPR-045-14.eqdsk")
+    gfile = my_gfile_reader.getGfile(gfile_path)
+    cdf_path = os.path.join(repository_path, "input_data", "profiles_SPR-045-14.CDF")
+    #pylint: disable=no-member
+    with netCDF4.Dataset(cdf_path, 'r') as cdf:
+        #pylint: enable=no-member
+        zeff = cdf.variables['ZEFF'][0][0]
+    current = 20.46
+    total_fusion_power = 1.42
+    total_alpha_power = 0.28
+
+    # Write csv file
+    output_dir = os.path.join(repository_path, "plots", "list_of_key_values_spr_045_14.csv")
+    with open(output_dir, "w", encoding="utf-8") as file:
+        file.write(f"R_axis = {gfile.rmaxis:.2f} m\n")
+        file.write(f"B_axis = {gfile.FSpline(0)/gfile.rmaxis:.2f} T\n")
+        file.write(f"Plasma current = {current:.2f} MA\n")
+        file.write(f"Zeff = {zeff:.2f}\n")
+        file.write(f"Total fusion power = {total_fusion_power:.2f} GW\n")
+        file.write(f"Total alpha power = {total_alpha_power:.2f} GW\n")
+
 
 
 if __name__ == "__main__":
 
-    tf_coil_inner_limb_scan()
+    # tf_coil_inner_limb_scan()
     # poincare_rmp_toggle_i3dr_scan()
-    # csv_of_key_values()
+    csv_of_key_values()
