@@ -8,9 +8,9 @@ the data files are in the output_data/FEC_2024 directory.
 import os
 import pickle
 import time
-from matplotlib.colors import Normalize
+from matplotlib.colors import Normalize, LogNorm, LinearSegmentedColormap
 # pylint: disable=no-name-in-module
-from matplotlib.cm import ScalarMappable, viridis
+from matplotlib.cm import ScalarMappable, viridis, Greys
 # pylint: enable=no-name-in-module
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
@@ -549,6 +549,59 @@ def spr_045_14_vs_spr_045_16():
                 bbox_inches='tight')
     plt.close('all')
 
+    # Now make SPR-045-16 plots
+
+    spr_string = "SPR-045-16"
+    energy_flux = energy_flux_dict[spr_string]
+    run0 = runs[0]
+
+    new_length = 1000
+    num_edges = new_length - 1
+    new_s_theta = np.interp(np.linspace(0, 1, new_length),
+                            np.linspace(0, 1, len(run0.flux.s_theta_1d)),
+                            run0.flux.s_theta_1d)
+    new_energy_flux = np.interp(np.linspace(0, 1, new_length),
+                                np.linspace(0, 1, len(run0.flux.energy_1d)),
+                                run0.flux.energy_1d)
+    x_points, y_points = wall.get_rz_from_s_theta(new_s_theta,
+                                                  run0.wall.r,
+                                                  run0.wall.z)
+    new_energy_flux_mid = 0.5 * (new_energy_flux[1:] + new_energy_flux[:-1])
+
+    fig, ax = plt.subplots()
+    fig_size = fig.get_size_inches()
+    fig.set_size_inches(fig_size * 2)
+    # norm = LogNorm(vmin=0.003, vmax=0.03)
+    cmap = LinearSegmentedColormap.from_list(
+        'custom_red', 
+        [(0, 0, 0, 0), (1, 0, 0)],  # RGBA from transparent to red
+        N=256  # Number of discrete colors
+    )
+    norm = Normalize(vmin=0, vmax=0.03)
+    scalar_map = ScalarMappable(norm=norm,
+                                cmap=cmap)
+    ax.plot(run0.wall.r, run0.wall.z, 'k',
+            linewidth=2)
+    for i in range(num_edges):
+        color = scalar_map.to_rgba(new_energy_flux_mid[i])
+        alpha = new_energy_flux_mid[i]/np.max(new_energy_flux_mid)
+        alpha = np.max([0, alpha])
+        ax.plot(x_points[i:i+2], y_points[i:i+2],
+                alpha=alpha,
+                linewidth=8,
+                color=color)
+    plt.colorbar(scalar_map, ax=ax, orientation='vertical')
+    ax.set_aspect('equal')
+    ax.set_xlim(0, 7.5)
+    ax.set_ylim(-10, 10)
+    ax.set_xlabel('R [m]')
+    ax.set_ylabel('Z [m]')
+    output_path = os.path.join(output_dir,
+                               "energy_flux_distribution_full_3d_with_colorbar")
+    fig.savefig(output_path + '.pdf', bbox_inches='tight')
+    fig.savefig(output_path + '.png', bbox_inches='tight',
+                dpi=300)
+    plt.close(fig)
 def plot_background_plasma_curves():
     """
     This function plots the background plasma curves to produce the 
@@ -604,12 +657,12 @@ if __name__ == "__main__":
     # paper_plots_3d.coil_plot_3d(gfile_path=GFILE_PATH)
     # plot_ripple_runs(RUNS)
     # plot_rmp_runs(RUNS)
-    plot_rmp_distribution(RUNS)
+    # plot_rmp_distribution(RUNS)
     # plot_rwm_runs(RUNS)
     # plot_background_plasma_curves()
     # ripple_check.plot_ripple_field()
     # paper_plots_extra.tf_coil_inner_limb_scan()
-    # spr_045_14_vs_spr_045_16()
+    spr_045_14_vs_spr_045_16()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
