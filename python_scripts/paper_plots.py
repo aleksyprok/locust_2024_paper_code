@@ -588,9 +588,11 @@ def spr_045_14_vs_spr_045_16():
         alpha = np.max([0, alpha])
         ax.plot(x_points[i:i+2], y_points[i:i+2],
                 alpha=alpha,
-                linewidth=8,
+                linewidth=4,
                 color=color)
-    plt.colorbar(scalar_map, ax=ax, orientation='vertical')
+    plt.colorbar(scalar_map, ax=ax, orientation='vertical',
+                 location='left',
+                 label=r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
     ax.set_aspect('equal')
     ax.set_xlim(0, 7.5)
     ax.set_ylim(-10, 10)
