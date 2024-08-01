@@ -8,9 +8,9 @@ the data files are in the output_data/FEC_2024 directory.
 import os
 import pickle
 import time
-from matplotlib.colors import Normalize, LogNorm, LinearSegmentedColormap
+from matplotlib.colors import Normalize, LinearSegmentedColormap
 # pylint: disable=no-name-in-module
-from matplotlib.cm import ScalarMappable, viridis, Greys
+from matplotlib.cm import ScalarMappable, viridis
 # pylint: enable=no-name-in-module
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
@@ -528,9 +528,23 @@ def spr_045_14_vs_spr_045_16():
         energy_flux_dict[spr_string] = run_i.flux.energy_1d
 
     fig, ax = plt.subplots()
-    for spr_string, energy_flux in energy_flux_dict.items():
+    for spr_string in ['SPR-045-14', 'SPR-045-16']:
+        energy_flux = energy_flux_dict[spr_string]
+        if spr_string == 'SPR-045-14':
+            linestyle = '-'
+            color = 'tab:blue'
+            alpha = 1
+            label = 'Dirtier plasma scenario'
+        elif spr_string == 'SPR-045-16':
+            linestyle = '--'
+            color = 'tab:orange'
+            alpha = 1
+            label = 'Baseline plasma scenario'
         ax.plot(runs[0].flux.s_theta_1d, energy_flux,
-                label=spr_string)
+                linestyle=linestyle,
+                color=color,
+                alpha=alpha,
+                label=label)
     ax.legend()
     clrs = ['tab:blue', 'tab:orange', 'tab:green', 'tab:red']
     symbols = ['+', 'x', 'o', 's']
@@ -542,7 +556,7 @@ def spr_045_14_vs_spr_045_16():
                 color=clrs[i],
                 marker=symbols[i])
     ax.set_xlabel(r'$s_\theta$ [m]')
-    ax.set_ylabel(r'Energy Flux [MW m$^{-2}$]')
+    ax.set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
     fig.savefig(output_dir + '/energy_flux_spr_045_14_vs_spr_045_16.png',
                 bbox_inches='tight', dpi=300)
     fig.savefig(output_dir + '/energy_flux_spr_045_14_vs_spr_045_16.pdf',
@@ -570,30 +584,29 @@ def spr_045_14_vs_spr_045_16():
 
     fig, ax = plt.subplots()
     fig_size = fig.get_size_inches()
-    fig.set_size_inches(fig_size * 2)
-    # norm = LogNorm(vmin=0.003, vmax=0.03)
+    fig.set_size_inches(fig_size)
     cmap = LinearSegmentedColormap.from_list(
-        'custom_red', 
-        [(0, 0, 0, 0), (1, 0, 0)],  # RGBA from transparent to red
-        N=256  # Number of discrete colors
+        'custom_red',
+        [(1, 1, 1), (1, 0.5, 1)],
+        N=256
     )
     norm = Normalize(vmin=0, vmax=0.03)
     scalar_map = ScalarMappable(norm=norm,
                                 cmap=cmap)
     ax.plot(run0.wall.r, run0.wall.z, 'k',
-            linewidth=2)
-    ax.annotate(r'$s_\theta=0$', 
-                xy=(run0.wall.r[0], run0.wall.z[0]), 
+            linewidth=1)
+    ax.annotate(r'$s_\theta=0$',
+                xy=(run0.wall.r[0], run0.wall.z[0]),
                 xytext=(8, run0.wall.z[0]),
                 arrowprops=dict(facecolor='black', arrowstyle='->',
                                 linewidth=1.5))
-    ax.annotate(r'Prompt losses', 
-                xy=(2.6, 6.3), 
+    ax.annotate(r'Prompt losses',
+                xy=(2.6, 6.3),
                 xytext=(8, 6.3),
                 arrowprops=dict(facecolor='black', arrowstyle='->',
                                 lw=1.5))
-    ax.annotate(r'Collisional losses', 
-                xy=(6, -8.5), 
+    ax.annotate(r'Collisional losses',
+                xy=(6, -8.5),
                 xytext=(8, -8.5),
                 arrowprops=dict(facecolor='black', arrowstyle='->',
                                 lw=1.5))
@@ -603,11 +616,17 @@ def spr_045_14_vs_spr_045_16():
         alpha = np.max([0, alpha])
         ax.plot(x_points[i:i+2], y_points[i:i+2],
                 alpha=alpha,
-                linewidth=4,
+                linewidth=3,
                 color=color)
     plt.colorbar(scalar_map, ax=ax, orientation='vertical',
                  location='left',
+                 pad=0.3,
                  label=r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
+
+    for i, s_nod_i in enumerate(run0.wall.special_nodes):
+        ax.plot(run0.wall.r[s_nod_i], run0.wall.z[s_nod_i],
+                color=clrs[i],
+                marker=symbols[i])
     ax.set_aspect('equal')
     ax.set_xlim(0, 7.5)
     ax.set_ylim(-10, 10)
@@ -619,6 +638,24 @@ def spr_045_14_vs_spr_045_16():
     fig.savefig(output_path + '.png', bbox_inches='tight',
                 dpi=300)
     plt.close(fig)
+
+    # Regular line plot of energy flux
+    fig, ax = plt.subplots()
+    ax.plot(run0.flux.s_theta_1d, energy_flux, 'k')
+    ax.set_xlabel(r'$s_\theta$ [m]')
+    ax.set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
+    y_mid = 0.5 * (ax.get_ylim()[1] - ax.get_ylim()[0])
+    for i, s_nod_i in enumerate(runs[0].wall.special_nodes):
+        ax.axvline(x=runs[0].wall.s_nodes[s_nod_i],
+                   color=clrs[i])
+        ax.plot(runs[0].wall.s_nodes[s_nod_i], y_mid,
+                color=clrs[i],
+                marker=symbols[i])
+    output_path = os.path.join(output_dir, "energy_flux_spr_045_16")
+    fig.savefig(output_path + '.pdf', bbox_inches='tight')
+    fig.savefig(output_path + '.png', bbox_inches='tight', dpi=300)
+    plt.close(fig)
+
 def plot_background_plasma_curves():
     """
     This function plots the background plasma curves to produce the 
@@ -666,6 +703,64 @@ def plot_background_plasma_curves():
                 bbox_inches='tight',
                 dpi=300)
     plt.close('all')
+
+    # Plot comparing SPR-045-14 and SPR-045-16
+    cdf_filename_14 = os.path.join(REPOSITORY_PATH, "input_data", "profiles_SPR-045-14.CDF")
+    psin_14, ti_14, te_14, ne_14, nd_14, nt_14 = prepare_profiles.read_cdf_file(cdf_filename_14)
+    gfile_path_14 = os.path.join(REPOSITORY_PATH, "input_data", 'SPR-045-14.eqdsk')
+    gfile_14 = prepare_profiles.get_gfile(gfile_path_14)
+    num_impurities_14 = prepare_profiles.calculate_number_of_impurities(cdf_filename_14)
+    _, _, nim_14 = prepare_profiles.get_impurity_data(cdf_filename_14, num_impurities_14)
+    fd_14, ft_14, fim_14 = prepare_profiles.calculate_ion_fractions(ne_14, nd_14, nt_14, nim_14)
+    reactivity_14 = dt_fusion.reactivity(ti_14*1e-3) # convert from eV to keV
+    reactivity_14 *= 1e-6  # convert from cm^3/s to m^3/s
+    reaction_rate_14 = reactivity_14 * ne_14 * fd_14 * ne_14 * ft_14
+    fig, axs = plt.subplots(2, 2)
+    fig_size = fig.get_size_inches()
+    fig_size *= 2
+    fig.set_size_inches(fig_size)
+    axs[0, 0].plot(psin_14, ti_14 * 1e-3, label=r'$T_i$')
+    axs[0, 0].plot(psin_14, te_14 * 1e-3, label=r'$T_e$')
+    axs[0, 0].legend()
+    axs[0, 0].set_ylabel('Temperature [keV]')
+    axs[0, 1].plot(gfile_14.psin, gfile_14.q, label='Dirtier plasma scenario')
+    axs[0, 1].set_ylabel('Safety Factor')
+    axs[1, 0].plot(psin_14, ne_14, label=r'$n_e$')
+    axs[1, 0].plot(psin_14, fd_14 * ne_14, label=r'$n_D$')
+    axs[1, 0].plot(psin_14, ft_14 * ne_14, label=r'$n_T$')
+    axs[1, 0].plot(psin_14, fim_14[0] * ne_14, label=r'$n_{Xe}$')
+    axs[1, 0].plot(psin_14, fim_14[1] * ne_14, label=r'$n_{He}$')
+    axs[1, 0].plot(psin_14, fim_14[2] * ne_14, label=r'$n_{Ar}$')
+    axs[1, 0].set_ylabel('Density of particle species [m$^{-3}$]')
+    axs[1, 0].set_yscale('log')
+    axs[1, 0].legend()
+    axs[1, 1].plot(psin_14, reaction_rate_14)
+    axs[1, 1].set_ylabel(r'DT Fusion Reaction Rate [m$^{-3}$ s$^{-1}$]')
+    for i in range(2):
+        for j in range(2):
+            axs[i, j].set_prop_cycle(None)
+    axs[0, 0].plot(psin, ti * 1e-3, alpha=0.5, linestyle='--')
+    axs[0, 0].plot(psin, te * 1e-3, alpha=0.5, linestyle='--')
+    axs[0, 1].plot(gfile.psin, gfile.q, alpha=0.5, linestyle='--', label='Baseline plasma scenario')
+    axs[0, 1].legend()
+    axs[1, 0].plot(psin, ne, label=r'$n_e$', alpha=0.5, linestyle='--')
+    axs[1, 0].plot(psin, fd * ne, label=r'$n_D$', alpha=0.5, linestyle='--')
+    axs[1, 0].plot(psin, ft * ne, label=r'$n_T$', alpha=0.5, linestyle='--')
+    axs[1, 0].plot(psin, fim[0] * ne, label=r'$n_{Xe}$', alpha=0.5, linestyle='--')
+    axs[1, 0].plot(psin, fim[1] * ne, label=r'$n_{He}$', alpha=0.5, linestyle='--')
+    axs[1, 1].plot(psin, reaction_rate, alpha=0.5, linestyle='--')
+    for i in range(2):
+        for j in range(2):
+            axs[i, j].set_xlabel(r'$\psi_N$')
+    output_dir = os.path.join(REPOSITORY_PATH, "plots")
+    output_path = os.path.join(output_dir, 'background_plasma_curves_14_vs_16')
+    fig.savefig(output_path + '.pdf',
+                bbox_inches='tight')
+    fig.savefig(output_path + '.png',
+                bbox_inches='tight',
+                dpi=300)
+    plt.close('all')
+
 
 
 if __name__ == "__main__":
