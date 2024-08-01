@@ -12,8 +12,9 @@ from matplotlib.colors import Normalize, LinearSegmentedColormap
 # pylint: disable=no-name-in-module
 from matplotlib.cm import ScalarMappable, viridis
 # pylint: enable=no-name-in-module
-import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import matplotlib.lines as mlines
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from python_scripts import bootstrap, dt_fusion, flux, paper_plots_extra, paper_plots_3d, \
@@ -528,6 +529,9 @@ def spr_045_14_vs_spr_045_16():
         energy_flux_dict[spr_string] = run_i.flux.energy_1d
 
     fig, ax = plt.subplots()
+    fig_size = fig.get_size_inches()
+    fig_size[0] *= 2
+    fig.set_size_inches(fig_size)
     for spr_string in ['SPR-045-14', 'SPR-045-16']:
         energy_flux = energy_flux_dict[spr_string]
         if spr_string == 'SPR-045-14':
@@ -582,9 +586,14 @@ def spr_045_14_vs_spr_045_16():
                                                   run0.wall.z)
     new_energy_flux_mid = 0.5 * (new_energy_flux[1:] + new_energy_flux[:-1])
 
-    fig, ax = plt.subplots()
+    fig = plt.figure()
     fig_size = fig.get_size_inches()
+    fig_size[0] *= 2
+    fig_size[1] *= 3
     fig.set_size_inches(fig_size)
+    gs = gridspec.GridSpec(3, 2, width_ratios=[0.05, 1])
+    ax1 = fig.add_subplot(gs[0:2, 1])
+    ax2 = fig.add_subplot(gs[2, :])
     cmap = LinearSegmentedColormap.from_list(
         'custom_red',
         [(1, 1, 1), (1, 0.5, 1)],
@@ -593,19 +602,19 @@ def spr_045_14_vs_spr_045_16():
     norm = Normalize(vmin=0, vmax=0.03)
     scalar_map = ScalarMappable(norm=norm,
                                 cmap=cmap)
-    ax.plot(run0.wall.r, run0.wall.z, 'k',
+    ax1.plot(run0.wall.r, run0.wall.z, 'k',
             linewidth=1)
-    ax.annotate(r'$s_\theta=0$',
+    ax1.annotate(r'$s_\theta=0$',
                 xy=(run0.wall.r[0], run0.wall.z[0]),
                 xytext=(8, run0.wall.z[0]),
                 arrowprops=dict(facecolor='black', arrowstyle='->',
                                 linewidth=1.5))
-    ax.annotate(r'Prompt losses',
+    ax1.annotate(r'Prompt losses',
                 xy=(2.6, 6.3),
                 xytext=(8, 6.3),
                 arrowprops=dict(facecolor='black', arrowstyle='->',
                                 lw=1.5))
-    ax.annotate(r'Collisional losses',
+    ax1.annotate(r'Collisional losses',
                 xy=(6, -8.5),
                 xytext=(8, -8.5),
                 arrowprops=dict(facecolor='black', arrowstyle='->',
@@ -614,47 +623,42 @@ def spr_045_14_vs_spr_045_16():
         color = scalar_map.to_rgba(new_energy_flux_mid[i])
         alpha = new_energy_flux_mid[i]/np.max(new_energy_flux_mid)
         alpha = np.max([0, alpha])
-        ax.plot(x_points[i:i+2], y_points[i:i+2],
+        ax1.plot(x_points[i:i+2], y_points[i:i+2],
                 alpha=alpha,
-                linewidth=3,
+                linewidth=6,
                 color=color)
-    plt.colorbar(scalar_map, ax=ax, orientation='vertical',
+    plt.colorbar(scalar_map, ax=ax1, orientation='vertical',
                  location='left',
                  pad=0.3,
                  label=r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
 
     for i, s_nod_i in enumerate(run0.wall.special_nodes):
-        ax.plot(run0.wall.r[s_nod_i], run0.wall.z[s_nod_i],
+        ax1.plot(run0.wall.r[s_nod_i], run0.wall.z[s_nod_i],
                 color=clrs[i],
                 marker=symbols[i])
-    ax.set_aspect('equal')
-    ax.set_xlim(0, 7.5)
-    ax.set_ylim(-10, 10)
-    ax.set_xlabel('R [m]')
-    ax.set_ylabel('Z [m]')
-    output_path = os.path.join(output_dir,
-                               "energy_flux_distribution_full_3d_with_colorbar")
-    fig.savefig(output_path + '.pdf', bbox_inches='tight')
-    fig.savefig(output_path + '.png', bbox_inches='tight',
-                dpi=300)
-    plt.close(fig)
+    ax1.set_aspect('equal')
+    ax1.set_xlim(0, 7.5)
+    ax1.set_ylim(-10, 10)
+    ax1.set_xlabel('R [m]')
+    ax1.set_ylabel('Z [m]')
 
     # Regular line plot of energy flux
-    fig, ax = plt.subplots()
-    ax.plot(run0.flux.s_theta_1d, energy_flux, 'k')
-    ax.set_xlabel(r'$s_\theta$ [m]')
-    ax.set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
-    y_mid = 0.5 * (ax.get_ylim()[1] - ax.get_ylim()[0])
+    ax2.plot(run0.flux.s_theta_1d, energy_flux, 'k')
+    ax2.set_xlabel(r'$s_\theta$ [m]')
+    ax2.set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
+    y_mid = 0.5 * (ax2.get_ylim()[1] - ax2.get_ylim()[0])
     for i, s_nod_i in enumerate(runs[0].wall.special_nodes):
-        ax.axvline(x=runs[0].wall.s_nodes[s_nod_i],
+        ax2.axvline(x=runs[0].wall.s_nodes[s_nod_i],
                    color=clrs[i])
-        ax.plot(runs[0].wall.s_nodes[s_nod_i], y_mid,
+        ax2.plot(runs[0].wall.s_nodes[s_nod_i], y_mid,
                 color=clrs[i],
                 marker=symbols[i])
-    output_path = os.path.join(output_dir, "energy_flux_spr_045_16")
+    output_path = os.path.join(output_dir, "energy_flux_full_3d")
+    fig.suptitle('TF ripple + RWM + Out-of-Vessel ELM Suppression Results',
+                 y=0.93)
     fig.savefig(output_path + '.pdf', bbox_inches='tight')
     fig.savefig(output_path + '.png', bbox_inches='tight', dpi=300)
-    plt.close(fig)
+    plt.close('all')
 
 def plot_background_plasma_curves():
     """
