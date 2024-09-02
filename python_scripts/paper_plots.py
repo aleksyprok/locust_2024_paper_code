@@ -170,7 +170,7 @@ def plot_ripple_runs(all_runs):
     axs[1].set_ylabel(r'Alpha Power Lost [%]')
     fig.suptitle('TF Ripple Field Results')
     for i in range(2):
-        axs[i].set_xlabel(r'Major radius of TF coil outer limb ($R_{coil}$) [m]')
+        axs[i].set_xlabel(r'Major radius of TF coil outer limb ($R_{outer}$) [m]')
         axs[i].set_yscale('log')
     output_path = os.path.join(output_dir, 'max_and_total_flux_vs_rcoil')
     fig.savefig(output_path + ".pdf", bbox_inches='tight')
@@ -488,12 +488,12 @@ def plot_rwm_runs(all_runs):
     conf_band_2d = df.sort_values(by='bscale').conf_band_2d.values
     conf_band_total = df.sort_values(by='bscale').conf_band_total.values \
                     / run_axisymmetric.log.pinj * 100
-    axs[0].errorbar(bscales, max_energy_flux, yerr=conf_band_2d)
-    axs[1].errorbar(bscales, total_energy_flux, yerr=conf_band_total)
+    axs[0].errorbar(bscales / 1e4, max_energy_flux, yerr=conf_band_2d)
+    axs[1].errorbar(bscales / 1e4, total_energy_flux, yerr=conf_band_total)
     axs[0].set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
     axs[1].set_ylabel('Alpha Power Lost [%]')
     for i in range(2):
-        axs[i].set_xlabel('Magnetic field strength of the RWM at the sensors [T]')
+        axs[i].set_xlabel('Magnetic field strength of RWM at sensors [T]')
         axs[i].set_xscale('log')
         axs[i].set_yscale('log')
     fig.suptitle('RWM field results')
@@ -774,11 +774,11 @@ if __name__ == "__main__":
     # plot_ripple_runs(RUNS)
     # plot_rmp_runs(RUNS)
     # plot_rmp_distribution(RUNS)
-    # plot_rwm_runs(RUNS)
+    plot_rwm_runs(RUNS)
     # plot_background_plasma_curves()
     # ripple_check.plot_ripple_field()
     # paper_plots_extra.tf_coil_inner_limb_scan()
-    spr_045_14_vs_spr_045_16()
+    # spr_045_14_vs_spr_045_16()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
