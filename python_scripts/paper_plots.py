@@ -559,6 +559,16 @@ def spr_045_14_vs_spr_045_16():
         ax.plot(runs[0].wall.s_nodes[s_nod_i], y_mid,
                 color=clrs[i],
                 marker=symbols[i])
+    ax.annotate(r'Collisional losses',
+                xy=(14, 0.06),
+                xytext=(19, 0.06),
+                arrowprops=dict(facecolor='black', arrowstyle='->',
+                lw=1.5))
+    ax.annotate(r'Prompt losses',
+                xy=(40, 0.025),
+                xytext=(20, 0.025),
+                arrowprops=dict(facecolor='black', arrowstyle='->',
+                lw=1.5))
     ax.set_xlabel(r'$s_\theta$ [m]')
     ax.set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
     fig.savefig(output_dir + '/energy_flux_spr_045_14_vs_spr_045_16.png',
@@ -653,6 +663,16 @@ def spr_045_14_vs_spr_045_16():
         ax2.plot(runs[0].wall.s_nodes[s_nod_i], y_mid,
                 color=clrs[i],
                 marker=symbols[i])
+    ax2.annotate(r'Collisional losses',
+                 xy=(14, 0.025),
+                 xytext=(19, 0.015),
+                 arrowprops=dict(facecolor='black', arrowstyle='->',
+                 lw=1.5))
+    ax2.annotate(r'Prompt losses',
+                 xy=(41, 0.025),
+                 xytext=(25, 0.025),
+                 arrowprops=dict(facecolor='black', arrowstyle='->',
+                 lw=1.5))
     output_path = os.path.join(output_dir, "energy_flux_full_3d")
     fig.suptitle('TF ripple + RWM + Out-of-Vessel ELM Suppression Results',
                  y=0.93)
@@ -774,11 +794,11 @@ if __name__ == "__main__":
     # plot_ripple_runs(RUNS)
     # plot_rmp_runs(RUNS)
     # plot_rmp_distribution(RUNS)
-    plot_rwm_runs(RUNS)
+    # plot_rwm_runs(RUNS)
     # plot_background_plasma_curves()
     # ripple_check.plot_ripple_field()
     # paper_plots_extra.tf_coil_inner_limb_scan()
-    # spr_045_14_vs_spr_045_16()
+    spr_045_14_vs_spr_045_16()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
