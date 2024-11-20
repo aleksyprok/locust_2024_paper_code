@@ -34,6 +34,8 @@ class ParticleGroup:
         self.remap_phi_n = None
         self.energy = np.array([])
         self.energy0 = np.array([])
+        self.v_parallel0 = np.array([])
+        self.v_perp0 = np.array([])
 
     def add_particles(self, data):
         """
@@ -144,3 +146,38 @@ def get_s_phi_s_theta_from_r_z_phi(run,
                                                            run.wall.r,
                                                            run.wall.z)
     run.markers.stopped.remap_phi_n = remap_phi_n
+
+def calc_stopped_v_parallel0_v_perp0(run):
+    """
+    Calculate the parallel and perpendicular velocity of the stopped markers.
+
+    The run object must have the following attributes:
+    - run.markers.stopped.r0
+    - run.markers.stopped.phi0
+    - run.markers.stopped.z0
+    - run.markers.stopped.vr0
+    - run.markers.stopped.vphi0
+    - run.markers.stopped.vz0
+    - run.gfile
+
+    Returns:
+
+        The initial and final parallel and perpendicular velocity of the markers to the
+        magnetic field.
+        We use the formula v_parallel = B.v / |B| and v_perp = sqrt(v^2 - v_parallel^2)
+    """
+
+    dpsi_dr = run.gfile.PsiSpline(run.markers.stopped.r0, run.markers.stopped.z0,
+                                  dx=1, dy=0, grid=False)
+    dpsi_dz = run.gfile.PsiSpline(run.markers.stopped.r0, run.markers.stopped.z0,
+                                  dx=0, dy=1, grid=False)
+    br = -dpsi_dz / run.markers.stopped.r0
+    bz = dpsi_dr / run.markers.stopped.r0
+    bt = run.gfile.bcentr * run.gfile.rcentr / run.markers.stopped.r0
+
+    run.markers.stopped.v_parallel0 = (run.markers.stopped.vr0 * br +
+                                       run.markers.stopped.vphi0 * bt +
+                                       run.markers.stopped.vz0 * bz) / \
+                                      np.sqrt(br**2 + bt**2 + bz**2)
+    run.markers.stopped.v_perp0 = np.sqrt(2 * run.markers.stopped.energy0 -
+                                          run.markers.stopped.v_parallel0**2)
