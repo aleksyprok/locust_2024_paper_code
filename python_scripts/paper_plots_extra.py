@@ -368,10 +368,137 @@ def csv_of_key_values():
         file.write(f"Total fusion power = {total_fusion_power:.2f} GW\n")
         file.write(f"Total alpha power = {total_alpha_power:.2f} GW\n")
 
+def plot_divb_pcolourmesh():
+    """
+    Plot the real and imaginary components of the divergence of the magnetic field (divB)
+    and visualize field components as pcolor meshes.
+    """
+    # Determine the repository and data paths
+    repository_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    rwm_control_path = os.path.join(repository_path, "input_data", "BPLASMA", "RWM_control")
 
+    # Get full paths of all files that start with "BPLASMA" in the rwm_control_path directory
+    control_files = [os.path.join(rwm_control_path, file) \
+                     for file in os.listdir(rwm_control_path) if file.startswith("BPLASMA")]
+
+    # Grid resolution for radial and vertical directions (assuming fixed)
+    num_r_points = 100
+    num_z_points = 200
+    toroidal_mode_number = -1
+
+    # Initialize arrays to store data
+    radial_grid = np.zeros((num_z_points, num_r_points))
+    vertical_grid = np.zeros((num_z_points, num_r_points))
+
+    # Iterate through each file to read and process data
+    for filename in control_files:
+        # Load the numerical data, skipping the first 3 header lines
+        data = np.loadtxt(filename, skiprows=3)
+
+        # Extract columns corresponding to R, Z, and B-field components
+        radius = data[:, 0]
+        height = data[:, 1]
+        br_real = data[:, 2]
+        br_imag = data[:, 3]
+        bz_real = data[:, 4]
+        bz_imag = data[:, 5]
+        bt_real = data[:, 6]
+        bt_imag = data[:, 7]
+
+        # Reshape R, Z, and the magnetic fields onto a grid
+        radial_grid = radius.reshape(num_r_points, num_z_points).T
+        vertical_grid = height.reshape(num_r_points, num_z_points).T
+        br_real_grid = br_real.reshape(num_r_points, num_z_points).T
+        br_imag_grid = br_imag.reshape(num_r_points, num_z_points).T
+        bz_real_grid = bz_real.reshape(num_r_points, num_z_points).T
+        bz_imag_grid = bz_imag.reshape(num_r_points, num_z_points).T
+        bt_real_grid = bt_real.reshape(num_r_points, num_z_points).T
+        bt_imag_grid = bt_imag.reshape(num_r_points, num_z_points).T
+
+        # Create a figure with subplots to visualize all the field components
+        fig, axes = plt.subplots(1, 3)
+        fig_size = fig.get_size_inches()
+        fig_size[0] *= 2
+        fig.set_size_inches(fig_size)
+
+        # Plot divB Real
+        divb_real = (1 / radial_grid) * np.gradient(radial_grid * br_real_grid, axis=1) \
+                    / np.gradient(radial_grid, axis=1) \
+                    - toroidal_mode_number * bt_imag_grid / radial_grid \
+                    + np.gradient(bz_real_grid, axis=0) \
+                    / np.gradient(vertical_grid, axis=0)
+        mesh1 = axes[0].pcolormesh(radial_grid, vertical_grid, divb_real, shading='auto', cmap='viridis')
+        fig.colorbar(mesh1, ax=axes[0])
+        axes[0].set_title('divB Real')
+
+        # Plot divB Imaginary (calculated from provided formulas)
+        divb_imag = (1 / radial_grid) * np.gradient(radial_grid * br_imag_grid, axis=1) \
+                    / np.gradient(radial_grid, axis=1) \
+                    + toroidal_mode_number * bt_real_grid  / radial_grid \
+                    + np.gradient(bz_imag_grid, axis=0) / \
+                    np.gradient(vertical_grid, axis=0)
+        mesh2 = axes[1].pcolormesh(radial_grid, vertical_grid, divb_imag, shading='auto', cmap='viridis')
+        fig.colorbar(mesh2, ax=axes[1])
+        axes[1].set_title('divB Imaginary')
+        for i in range(3):
+            axes[i].set_xlabel('Radius (m)')
+            axes[i].set_ylabel('Height (m)')
+            axes[i].set_aspect('equal')
+
+        # Plot absolute value of B
+        B_abs_avg = 0.5 * (
+                    np.sqrt(br_real_grid**2 + bz_real_grid**2 + bt_real_grid**2) +
+                    np.sqrt(br_imag_grid**2 + bz_imag_grid**2 + bt_imag_grid**2))
+        mesh3 = axes[2].pcolormesh(radial_grid, vertical_grid, B_abs_avg, shading='auto', cmap='viridis')
+        fig.colorbar(mesh3, ax=axes[2])
+        axes[2].set_title('<|B|>')                
+
+        # Create figure suptitle with last part of the filename
+        fig.suptitle(filename.split('/')[-1])     
+
+        # Save figure to output directory
+        # Make a divb directory if it doesn't exist
+        divb_directory = os.path.join(repository_path, 'plots', 'divb')
+        os.makedirs(divb_directory, exist_ok=True)
+        fig.savefig(divb_directory + '/' + filename.split('/')[-1] + '.png',
+                    bbox_inches='tight', dpi=300)
+
+        # Make new plot of just the magnetic fields
+        fig, axes = plt.subplots(1, 6)
+        fig_size = fig.get_size_inches()
+        fig_size[0] *= 4
+        fig.set_size_inches(fig_size)
+
+        mesh = axes[0].pcolormesh(radial_grid, vertical_grid, bt_real_grid, shading='auto', cmap='viridis')
+        fig.colorbar(mesh, ax=axes[0])
+        axes[0].set_title('Bt Real')
+        mesh = axes[1].pcolormesh(radial_grid, vertical_grid, bt_imag_grid, shading='auto', cmap='viridis')
+        fig.colorbar(mesh, ax=axes[1])
+        axes[1].set_title('Bt Imag')
+        mesh = axes[2].pcolormesh(radial_grid, vertical_grid, br_real_grid, shading='auto', cmap='viridis')
+        fig.colorbar(mesh, ax=axes[2])
+        axes[2].set_title('Br Real')
+        mesh = axes[3].pcolormesh(radial_grid, vertical_grid, br_imag_grid, shading='auto', cmap='viridis')
+        fig.colorbar(mesh, ax=axes[3])
+        axes[3].set_title('Br Imag')
+        mesh = axes[4].pcolormesh(radial_grid, vertical_grid, bz_real_grid, shading='auto', cmap='viridis')
+        fig.colorbar(mesh, ax=axes[4])
+        axes[4].set_title('Bz Real')
+        mesh = axes[5].pcolormesh(radial_grid, vertical_grid, bz_imag_grid, shading='auto', cmap='viridis')
+        fig.colorbar(mesh, ax=axes[5])
+        axes[5].set_title('Bz Imag')
+        for i in range(6):
+            axes[i].set_xlabel('Radius (m)')
+            axes[i].set_ylabel('Height (m)')
+            axes[i].set_aspect('equal')
+        fig.suptitle(filename.split('/')[-1])
+        fig.savefig(divb_directory + '/' + filename.split('/')[-1] + '_fields.png',
+                    bbox_inches='tight', dpi=300)
+        plt.close('all')
 
 if __name__ == "__main__":
 
     # tf_coil_inner_limb_scan()
     # poincare_rmp_toggle_i3dr_scan()
-    csv_of_key_values()
+    # csv_of_key_values()
+    plot_divb_pcolourmesh()
