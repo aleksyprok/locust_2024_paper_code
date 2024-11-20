@@ -785,6 +785,115 @@ def plot_background_plasma_curves():
                 dpi=300)
     plt.close('all')
 
+def plot_hotpost_distributions():
+
+    class Circle:
+        """Class to represent a circle with a center and radius."""
+        def __init__(self, centre_r, centre_z, radius):
+            self.centre_r = centre_r
+            self.centre_z = centre_z
+            self.radius = radius
+
+        def generate_circle(self, num_points=100):
+            """Generates the r and z coordinates of the circle for plotting."""
+            circle_s = np.linspace(0, 2 * np.pi, num_points)
+            circle_r = self.centre_r + self.radius * np.cos(circle_s)
+            circle_z = self.centre_z + self.radius * np.sin(circle_s)
+            return circle_r, circle_z
+
+    # Define the hotspots using the Circle class
+    hotspots = {
+        "top": Circle(centre_r=2.5, centre_z=6.5, radius=1),
+        "bottom": Circle(centre_r=6.0, centre_z=-8.0, radius=1),
+        "left": Circle(centre_r=1.8, centre_z=2.5, radius=1)
+    }
+
+    # Paths and run configuration
+    runs_path = os.path.join(REPOSITORY_PATH, "output_data", "full_3d_field_spr_045_14_and_16_processed")
+    plot_dir = os.path.join(REPOSITORY_PATH, "plots", "hotspot_distributions")
+    os.makedirs(plot_dir, exist_ok=True)
+    full_3d_run_dir = os.path.join(runs_path, "gpu-q-52")
+    full_3d_run_tag = "25-07-2024_12-17-50.555"
+    full_3d_run = run.Run(full_3d_run_dir, full_3d_run_tag)
+    full_3d_run.init_gfile(GFILE_PATH)
+    full_3d_run.init_markers()
+
+    # Plot markers and the hotspot circles
+    # fig, ax = plt.subplots()
+    # ax.scatter(full_3d_run.markers.stopped.r, full_3d_run.markers.stopped.z, s=0.1)
+    # # Plot each hotspot circle using a loop
+    # for label, hotspot in hotspots.items():
+    #     circle_r, circle_z = hotspot.generate_circle()
+    #     ax.plot(circle_r, circle_z, 'k--')
+    # ax.set_aspect('equal')
+    # ax.set_xlabel('R [m]')
+    # ax.set_ylabel('Z [m]')
+
+    # Find the indices of the markers inside the hotspot circles
+    hotspot_indices = {}
+    for label, hotspot in hotspots.items():
+        hotspot_indices[label] = np.where(
+            (full_3d_run.markers.stopped.r < hotspot.centre_r + hotspot.radius) &
+            (full_3d_run.markers.stopped.r > hotspot.centre_r - hotspot.radius) &
+            (full_3d_run.markers.stopped.z < hotspot.centre_z + hotspot.radius) &
+            (full_3d_run.markers.stopped.z > hotspot.centre_z - hotspot.radius)
+        )[0]
+    
+    # Plot markers inside each hotspot
+    # fig, ax = plt.subplots()
+    # for label, indices in hotspot_indices.items():
+    #     ax.scatter(full_3d_run.markers.stopped.r[indices], full_3d_run.markers.stopped.z[indices], s=0.1)
+    # ax.set_aspect('equal')
+    # ax.set_xlabel('R [m]')
+    # ax.set_ylabel('Z [m]')
+
+    # Make a histogram of the energy distribution for each hotspot
+    # Convert energy from J to MeV
+    fig, ax = plt.subplots()
+    for label, indices in hotspot_indices.items():
+        # energy = energy * mass of helium * charge of electron
+        ax.hist(full_3d_run.markers.stopped.energy[indices] / 1e6 * 6.6464731e-27 / 1.602e-19,
+                weights=full_3d_run.markers.stopped.weight[indices],
+                histtype='step',
+                label = label + ' hotspot',
+                bins=100)
+    ax.legend()
+    ax.set_xlabel('Energy [MeV]')
+    ax.set_ylabel('Weighted Number of Markers')
+    ax.set_title('Energy distribution of SPR-045-16 Hotspots')
+    fig.savefig(os.path.join(plot_dir, 'hotspot_energy.png'),
+                bbox_inches='tight',
+                dpi=300)
+
+    # Make a histogram of the initial v_|| / v for each hotspot
+    fig, ax = plt.subplots()
+    for label, indices in hotspot_indices.items():
+        ax.hist(full_3d_run.markers.stopped.v_parallel0[indices] /
+                np.sqrt(2 * full_3d_run.markers.stopped.energy0[indices]),
+                weights=full_3d_run.markers.stopped.weight[indices],
+                histtype='step',
+                label = label + ' hotspot',
+                bins=100)
+    ax.legend()
+    ax.set_xlabel(r'$v_{||}$ / |v|')
+    ax.set_title('Initial pitch angle distribution of SPR-045-16 Hotspots')
+    ax.set_ylabel('Weighted Number of Markers')
+    fig.savefig(os.path.join(plot_dir, 'hotspot_v_parallel.png'),
+                bbox_inches='tight',
+                dpi=300)
+
+    # Make a histogram of initial arctan(Z, R - gfile.rmaxis) for each hotspot
+    # fig, ax = plt.subplots()
+    # for label, indices in hotspot_indices.items():
+    #     ax.hist(np.arctan2(full_3d_run.markers.stopped.z0[indices],
+    #                        full_3d_run.markers.stopped.r0[indices] - full_3d_run.gfile.rmaxis),
+    #             weights=full_3d_run.markers.stopped.weight[indices],
+    #             range = (-np.pi, np.pi),
+    #             histtype='step',
+    #             bins=100)
+    # ax.set_xlabel('arctan(Z, R - gfile.rmaxis)')
+    # ax.set_ylabel('Weighted Number of Markers')
+    # plt.show()
 
 
 if __name__ == "__main__":
@@ -798,7 +907,8 @@ if __name__ == "__main__":
     # plot_background_plasma_curves()
     # ripple_check.plot_ripple_field()
     # paper_plots_extra.tf_coil_inner_limb_scan()
-    spr_045_14_vs_spr_045_16()
+    # spr_045_14_vs_spr_045_16()
+    plot_hotpost_distributions()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
