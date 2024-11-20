@@ -57,6 +57,8 @@ class Run:
         if self.wall is not None:
             markers.get_s_phi_s_theta_from_r_z_phi(self,
                                                    remap_phi_n=remap_phi_n)
+        if self.gfile is not None:
+            markers.calc_stopped_v_parallel0_v_perp0(self)
 
     def init_gfile(self, gfile_path):
         """
