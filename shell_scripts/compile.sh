@@ -14,7 +14,7 @@ absolute_value() {
     fi
 }
 
-device="csd3"
+device="leonardo"
 tokamak="STEP"
 input_dir="$(pwd)/../input_data"
 home_dir=$HOME
@@ -47,7 +47,6 @@ dplot=0
 timax="1.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
-timax="none"
 run_category=1
 rcoils+=("$rcoil")
 rcoils_inner+=("$rcoil_inner")
@@ -538,7 +537,7 @@ for ((n=0; n<num_runs; n++)); do
 
     echo "n="$n
     # If run category is not x skip
-    if [[ ${run_categories[$n]} -ne 8 ]]; then
+    if [[ ${run_categories[$n]} -ne 1 ]]; then
         continue
     fi
 
