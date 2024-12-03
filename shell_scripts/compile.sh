@@ -683,7 +683,7 @@ for ((n=0; n<num_runs; n++)); do
     SRC="file_profile_Ti = 'profile_Ti_file' ! apkp"
     DST="file_profile_Ti = 'profile_"$spr_string"_Ti.dat'"
     sed -i "s|$SRC|$DST|g" $prec_file
-    if [[ $spr_string == "SPR-068-7" ]] then
+    if [[ $spr_string == "SPR-068-7" ]]; then
         SRC="R0F    = 1.2_gpu !0.85_gpu"
         DST="R0F    = 1.8_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
@@ -693,8 +693,8 @@ for ((n=0; n<num_runs; n++)); do
         SRC="Z0F    = -7.0_gpu !-4.30_gpu"
         DST="Z0F    = -7.25_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
-        SRC="Z1F    = 7.0_gpu !4.30_gpu"
-        DST="Z1F    = 7.25_gpu"
+        SRC="Z1F    = +7.0_gpu !+4.30_gpu"
+        DST="Z1F    = +7.25_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
     fi
 
