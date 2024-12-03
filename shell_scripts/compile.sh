@@ -92,8 +92,10 @@ timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
 run_category=2
-ncoils_unique=(12 16 18)
-rcoils_unique=("7.0" "7.25" "7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0")
+# ncoils_unique=(12 16 18)
+ncoils_unique=(12)
+# rcoils_unique=("7.0" "7.25" "7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0")
+rcoils_unique=("7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0" "9.25" "9.50")
 for ncoil in "${ncoils_unique[@]}"; do
     for rcoil in "${rcoils_unique[@]}"; do
         for spr_string in "${spr_strings_unique[@]}"; do
@@ -536,7 +538,7 @@ for ((n=0; n<num_runs; n++)); do
 
     echo "n="$n
     # If run category is not x skip
-    if [[ ${run_categories[$n]} -ne 2 ]]; then
+    if [[ ${run_categories[$n]} -ge 3 ]]; then
         continue
     fi
 
@@ -681,6 +683,20 @@ for ((n=0; n<num_runs; n++)); do
     SRC="file_profile_Ti = 'profile_Ti_file' ! apkp"
     DST="file_profile_Ti = 'profile_"$spr_string"_Ti.dat'"
     sed -i "s|$SRC|$DST|g" $prec_file
+    if [[ $spr_string == "SPR-068-7" ]] then
+        SRC="R0F    = 1.2_gpu !0.85_gpu"
+        DST="R0F    = 1.6_gpu"
+        sed -i "s/$SRC/$DST/g" $prec_file
+        SRC="R1F    = 6.0_gpu !4.15_gpu"
+        DST="R1F    = 7.0_gpu"
+        sed -i "s/$SRC/$DST/g" $prec_file
+        SRC="Z0F    = -7.0_gpu !-4.30_gpu"
+        DST="Z0F    = -7.5_gpu"
+        sed -i "s/$SRC/$DST/g" $prec_file
+        SRC="Z1F    = 7.0_gpu !4.30_gpu"
+        DST="Z1F    = 7.5_gpu"
+        sed -i "s/$SRC/$DST/g" $prec_file
+    fi
 
     # BPLASMA code
 
