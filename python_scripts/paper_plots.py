@@ -17,8 +17,8 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from python_scripts import bootstrap, dt_fusion, flux, paper_plots_extra, paper_plots_3d, \
-                           prepare_profiles, ripple_check, run, wall
+from python_scripts import bootstrap, dt_fusion, flux, my_gfile_reader, paper_plots_extra, \
+                           paper_plots_3d, prepare_profiles, ripple_check, run, wall
 
 plt.rcParams.update({'font.size': 14})
 REPOSITORY_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -895,6 +895,53 @@ def plot_hotpost_distributions():
     # ax.set_ylabel('Weighted Number of Markers')
     # plt.show()
 
+def plot_magnetic_flux_surfaces():
+    """
+    Plot the magnetic flux surfaces using the eqdsk files
+    for SPR-045-14, SPR-045-16 and SPR-068-7.
+    """
+
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    gfile_paths = []
+    gfile_paths.append(os.path.join(repo_path, "input_data", "SPR-045-14.eqdsk"))
+    gfile_paths.append(os.path.join(repo_path, "input_data", "SPR-045-16.eqdsk"))
+    gfile_paths.append(os.path.join(repo_path, "input_data", "SPR-068-7.eqdsk"))
+    gfile_labels = ["SPR-045-14 LCFS", "SPR-045-16 LCFS", "SPR-068-7 LCFS"]
+    gfiles = []
+    for gfile_path in gfile_paths:
+        gfile = my_gfile_reader.getGfile(gfile_path)
+        gfiles.append(gfile)
+    
+    wall_paths = []
+    wall_paths.append(os.path.join(repo_path, "input_data", "SPP-001_wall.dat"))
+    wall_paths.append(os.path.join(repo_path, "input_data", "SPR-068_wall.dat"))
+    wall_labels = ["SPR-045 Wall", "SPR-068 Wall"]
+
+    fig, ax = plt.subplots()
+    fig_size = fig.get_size_inches()
+    fig_size *= 2
+    fig.set_size_inches(fig_size)
+    for i, gfile_path in enumerate(gfile_paths):
+        gfile = my_gfile_reader.getGfile(gfile_path)
+        ax.plot(gfile.R_bnd, gfile.Z_bnd,
+                linestyle='--',
+                label=gfile_labels[i])
+    for i, wall_path in enumerate(wall_paths):
+        rz_coords = np.loadtxt(wall_path)
+        r_coords = rz_coords[:, 0]
+        z_coords = rz_coords[:, 1]
+        print(np.shape(rz_coords))
+        ax.plot(r_coords, z_coords,
+                label=wall_labels[i])
+    xlim = ax.get_xlim()
+    xlim = [0, xlim[1]]
+    ax.set_xlim(xlim)
+    ax.grid(True)
+    ax.legend()
+    ax.set_aspect('equal')
+    output_dir = os.path.join(REPOSITORY_PATH, "plots")
+    output_path = os.path.join(output_dir, 'lcfs_and_walls.png')
+    fig.savefig(output_path, dpi=300, bbox_inches='tight')
 
 if __name__ == "__main__":
     start_time = time.time()
@@ -908,7 +955,8 @@ if __name__ == "__main__":
     # ripple_check.plot_ripple_field()
     # paper_plots_extra.tf_coil_inner_limb_scan()
     # spr_045_14_vs_spr_045_16()
-    plot_hotpost_distributions()
+    # plot_hotpost_distributions()
+    plot_magnetic_flux_surfaces()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
