@@ -685,16 +685,16 @@ for ((n=0; n<num_runs; n++)); do
     sed -i "s|$SRC|$DST|g" $prec_file
     if [[ $spr_string == "SPR-068-7" ]] then
         SRC="R0F    = 1.2_gpu !0.85_gpu"
-        DST="R0F    = 1.6_gpu"
+        DST="R0F    = 1.8_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
         SRC="R1F    = 6.0_gpu !4.15_gpu"
         DST="R1F    = 7.0_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
         SRC="Z0F    = -7.0_gpu !-4.30_gpu"
-        DST="Z0F    = -7.5_gpu"
+        DST="Z0F    = -7.25_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
         SRC="Z1F    = 7.0_gpu !4.30_gpu"
-        DST="Z1F    = 7.5_gpu"
+        DST="Z1F    = 7.25_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
     fi
 
