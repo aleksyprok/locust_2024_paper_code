@@ -21,9 +21,9 @@ home_dir=$HOME
 prec_file=$home_dir"/locust/prec_mod.f90"
 mesh_file="SPP-001-1.cdb.locust"
 run_name="FEC_2024"
-spr_strings_unique=("SPR-045-14" "SPR-045-16")
+spr_strings_unique=("SPR-045-14" "SPR-045-16" "SPR-068-7")
 
-niter=2
+niter=1
 threadsPerBlock=256
 blocksPerGrid=256
 
@@ -42,32 +42,34 @@ bscale=0
 bplasma=0
 rwm_control=0
 rmp=0
-spr_string="SPR-045-16"
+spr_string="none"
 dplot=0
-timax="1.0_gpu"
+timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
 run_category=1
-rcoils+=("$rcoil")
-rcoils_inner+=("$rcoil_inner")
-ncoils+=("$ncoil")
-bripples+=("$bripple")
-toroidal_modes+=("$toroidal_mode")
-coil_sets+=("$coil_set")
-currents+=("$current")
-responses+=("$response")
-phases+=("$phase")
-gain_values+=("$gain_value")
-bscales+=("$bscale")
-bplasmas+=("$bplasma")
-rwm_controls+=("$rwm_control")
-rmps+=("$rmp")
-spr_strings+=("$spr_string")
-dplots+=("$dplot")
-timaxs+=("$timax")
-unbors+=("$unbor")
-dt0s+=("$dt0")
-run_categories+=("$run_category")
+for spr_string in "${spr_strings_unique[@]}"; do
+    rcoils+=("$rcoil")
+    rcoils_inner+=("$rcoil_inner")
+    ncoils+=("$ncoil")
+    bripples+=("$bripple")
+    toroidal_modes+=("$toroidal_mode")
+    coil_sets+=("$coil_set")
+    currents+=("$current")
+    responses+=("$response")
+    phases+=("$phase")
+    gain_values+=("$gain_value")
+    bscales+=("$bscale")
+    bplasmas+=("$bplasma")
+    rwm_controls+=("$rwm_control")
+    rmps+=("$rmp")
+    spr_strings+=("$spr_string")
+    dplots+=("$dplot")
+    timaxs+=("$timax")
+    unbors+=("$unbor")
+    dt0s+=("$dt0")
+    run_categories+=("$run_category")
+done
 
 # Ripple simulations
 rcoil=0
@@ -86,35 +88,36 @@ rwm_control=0
 rmp=0
 spr_string="SPR-045-16"
 dplot=0
-timax="1.0_gpu"
+timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
-timax="none"
 run_category=2
 ncoils_unique=(12 16 18)
 rcoils_unique=("7.0" "7.25" "7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0")
 for ncoil in "${ncoils_unique[@]}"; do
     for rcoil in "${rcoils_unique[@]}"; do
-        ncoils+=("$ncoil")
-        rcoils+=("$rcoil")
-        rcoils_inner+=("$rcoil_inner")
-        bripples+=("$bripple")
-        toroidal_modes+=("$toroidal_mode")
-        coil_sets+=("$coil_set")
-        currents+=("$current")
-        responses+=("$response")
-        phases+=("$phase")
-        gain_values+=("$gain_value")
-        bscales+=("$bscale")
-        bplasmas+=("$bplasma")
-        rwm_controls+=("$rwm_control")
-        rmps+=("$rmp")
-        spr_strings+=("$spr_string")
-        dplots+=("$dplot")
-        timaxs+=("$timax")
-        unbors+=("$unbor")
-        dt0s+=("$dt0")
-        run_categories+=("$run_category")
+        for spr_string in "${spr_strings_unique[@]}"; do
+            ncoils+=("$ncoil")
+            rcoils+=("$rcoil")
+            rcoils_inner+=("$rcoil_inner")
+            bripples+=("$bripple")
+            toroidal_modes+=("$toroidal_mode")
+            coil_sets+=("$coil_set")
+            currents+=("$current")
+            responses+=("$response")
+            phases+=("$phase")
+            gain_values+=("$gain_value")
+            bscales+=("$bscale")
+            bplasmas+=("$bplasma")
+            rwm_controls+=("$rwm_control")
+            rmps+=("$rmp")
+            spr_strings+=("$spr_string")
+            dplots+=("$dplot")
+            timaxs+=("$timax")
+            unbors+=("$unbor")
+            dt0s+=("$dt0")
+            run_categories+=("$run_category")
+        done
     done
 done
 
@@ -135,10 +138,9 @@ rwm_control=0
 rmp=1
 spr_string="SPR-045-16"
 dplot=0
-timax="1.0_gpu"
+timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
-timax="none"
 run_category=3
 phases_unique=("000.00" "045.00" "090.00" "135.00"
                "180.00" "225.00" "270.00" "315.00")
@@ -220,10 +222,9 @@ rwm_control=0
 rmp=1
 spr_string="SPR-045-16"
 dplot=0
-timax="1.0_gpu"
+timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
-timax="none"
 run_category=4
 toroidal_modes_unique=(-2 -3 -4)
 coil_sets_unique=("efcc" "rwm")
@@ -307,10 +308,9 @@ rwm_control=0
 rmp=1
 spr_string="SPR-045-16"
 dplot=0
-timax="1.0_gpu"
+timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
-timax="none"
 run_category=5
 bscales_unique=(1 10 100 1000)
 for bscale in "${bscales_unique[@]}"; do
@@ -353,7 +353,7 @@ rwm_control=0
 rmp=0
 spr_string="SPR-045-16"
 dplot=0
-timax="1.0_gpu"
+timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
 run_category=6
@@ -384,7 +384,7 @@ for rcoil in "${rcoils_unique[@]}"; do
     done
 done
 
-# All 3D fields simulations
+# TF Ripple + RMP + RWM
 rcoil=9.0
 rcoil_inner=0.75
 ncoil=16
@@ -401,10 +401,9 @@ rwm_control=0
 rmp=1
 spr_string="none"
 dplot=0
-timax="1.0_gpu"
+timax="10.0_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
-timax="none"
 run_category=7
 for spr_string in "${spr_strings_unique[@]}"; do
     ncoils+=("$ncoil")
@@ -537,7 +536,7 @@ for ((n=0; n<num_runs; n++)); do
 
     echo "n="$n
     # If run category is not x skip
-    if [[ ${run_categories[$n]} -ne 1 ]]; then
+    if [[ ${run_categories[$n]} -ne 2 ]]; then
         continue
     fi
 
