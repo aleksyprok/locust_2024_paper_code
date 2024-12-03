@@ -936,12 +936,15 @@ def plot_magnetic_flux_surfaces():
     xlim = ax.get_xlim()
     xlim = [0, xlim[1]]
     ax.set_xlim(xlim)
+    ax.set_xlabel('R [m]')
+    ax.set_ylabel('Z [m]')
     ax.grid(True)
     ax.legend()
     ax.set_aspect('equal')
     output_dir = os.path.join(REPOSITORY_PATH, "plots")
     output_path = os.path.join(output_dir, 'lcfs_and_walls.png')
     fig.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.show()
 
 if __name__ == "__main__":
     start_time = time.time()

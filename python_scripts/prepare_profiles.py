@@ -177,7 +177,7 @@ def main(spr_string, input_dir, output_dir, num_markers):
     print(f'Time taken for run main: {end_time - start_time:.2e} seconds')
 
 if __name__ == "__main__":
-    SPR_STRING = 'SPR-045-16'
+    SPR_STRING = 'SPR-068-7'
     CURRENT_DIR = os.path.dirname(__file__)
     INPUT_DATA_DIR = os.path.join(CURRENT_DIR, '..', 'input_data')
     OUTPUT_DIR = INPUT_DATA_DIR
