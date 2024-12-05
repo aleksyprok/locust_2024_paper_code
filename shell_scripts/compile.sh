@@ -527,10 +527,6 @@ if [[ $nohdf5 == 1 ]]; then
 fi
 diff $input_dir/"makefile_template" "$home_dir/locust/makefile"
 
-rsync -avh \
-$input_dir"/"$mesh_file \
-$home_dir"/locust."$tokamak"/InputFiles/."
-
 cd $home_dir"/locust"
 
 num_runs=${#rcoils[@]}
@@ -541,6 +537,18 @@ for ((n=0; n<num_runs; n++)); do
     if [[ ${run_categories[$n]} -ge 3 ]]; then
         continue
     fi
+    if [[ ${spr_strings[$n]} != "SPR-068-7" ]]; then
+        continue
+    fi
+    if [[ ${spr_strings[$n]} != "SPR-068-7" ]]; then
+        mesh_file="SPP-001-1.cdb.locust"
+    else
+        mesh_file="SPR-068.cdb.locust"
+    fi
+    rsync -avh \
+    $input_dir"/"$mesh_file \
+    $home_dir"/locust."$tokamak"/InputFiles/."
+
 
     rcoil=${rcoils[$n]}
     rcoil_inner=${rcoils_inner[$n]}
@@ -688,7 +696,7 @@ for ((n=0; n<num_runs; n++)); do
         DST="R0F    = 1.8_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
         SRC="R1F    = 6.0_gpu !4.15_gpu"
-        DST="R1F    = 7.0_gpu"
+        DST="R1F    = 6.8_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
         SRC="Z0F    = -7.0_gpu !-4.30_gpu"
         DST="Z0F    = -7.25_gpu"
