@@ -70,8 +70,10 @@ def prepare_locust_wall(cdb_fname, locust_fname):
                 split_line = list(map(int, line.split()))
                 tet_counter += 1
                 duplicates = [split_line[-1]] * 5
+                # locust_file.write(fmt.format(cmpnt_no, cmpnt_no, 1, cmpnt_no, 0, 0, 0, 0, 8, 0,
+                #                              *split_line[10:14], *duplicates))
                 locust_file.write(fmt.format(cmpnt_no, cmpnt_no, 1, cmpnt_no, 0, 0, 0, 0, 8, 0,
-                                            *split_line[10:14], *duplicates))
+                                             tet_counter, *split_line[11:14], *duplicates))
 
     # End EBLOCK processing
     locust_file.write('/wb,elem,end\n')
@@ -160,7 +162,7 @@ if __name__ == "__main__":
     REPOSITORY_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     CDB_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "Stepmesh.cdb")
     LOCUST_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068.cdb.locust")
-    # prepare_locust_wall(CDB_FNAME, LOCUST_FNAME)
+    prepare_locust_wall(CDB_FNAME, LOCUST_FNAME)
     CSV_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR68_2D_Wall.csv")
     DAT_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068_wall.dat")
     prepare_continuous_wall(CSV_FNAME, DAT_FNAME)
