@@ -685,9 +685,10 @@ def plot_background_plasma_curves():
     This function plots the background plasma curves to produce the 
     density temperature, safety factor and reaction rate plots in the paper.
     """
-    cdf_filename = os.path.join(REPOSITORY_PATH, "input_data", "profiles_SPR-045-16.CDF")
+    spr_string = 'SPR-068-7'
+    cdf_filename = os.path.join(REPOSITORY_PATH, "input_data", f"profiles_{spr_string}.CDF")
     psin, ti, te, ne, nd, nt = prepare_profiles.read_cdf_file(cdf_filename)
-    gfile_path = os.path.join(REPOSITORY_PATH, "input_data", 'SPR-045-16.eqdsk')
+    gfile_path = os.path.join(REPOSITORY_PATH, "input_data", f'{spr_string}.eqdsk')
     gfile = prepare_profiles.get_gfile(gfile_path)
     num_impurities = prepare_profiles.calculate_number_of_impurities(cdf_filename)
     _, _, nim = prepare_profiles.get_impurity_data(cdf_filename, num_impurities)
@@ -720,7 +721,7 @@ def plot_background_plasma_curves():
         for j in range(2):
             axs[i, j].set_xlabel(r'$\psi_N$')
     output_dir = os.path.join(REPOSITORY_PATH, "plots")
-    output_path = os.path.join(output_dir, 'background_plasma_curves')
+    output_path = os.path.join(output_dir, 'background_plasma_curves_' + spr_string)
     fig.savefig(output_path + '.pdf',
                 bbox_inches='tight')
     fig.savefig(output_path + '.png',
@@ -954,12 +955,12 @@ if __name__ == "__main__":
     # plot_rmp_runs(RUNS)
     # plot_rmp_distribution(RUNS)
     # plot_rwm_runs(RUNS)
-    # plot_background_plasma_curves()
+    plot_background_plasma_curves()
     # ripple_check.plot_ripple_field()
     # paper_plots_extra.tf_coil_inner_limb_scan()
     # spr_045_14_vs_spr_045_16()
     # plot_hotpost_distributions()
-    plot_magnetic_flux_surfaces()
+    # plot_magnetic_flux_surfaces()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")
