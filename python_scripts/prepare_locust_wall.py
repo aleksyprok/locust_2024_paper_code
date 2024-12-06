@@ -70,10 +70,10 @@ def prepare_locust_wall(cdb_fname, locust_fname):
                 split_line = list(map(int, line.split()))
                 tet_counter += 1
                 duplicates = [split_line[-1]] * 5
-                # locust_file.write(fmt.format(cmpnt_no, cmpnt_no, 1, cmpnt_no, 0, 0, 0, 0, 8, 0,
-                #                              *split_line[10:14], *duplicates))
                 locust_file.write(fmt.format(cmpnt_no, cmpnt_no, 1, cmpnt_no, 0, 0, 0, 0, 8, 0,
-                                             tet_counter, *split_line[11:14], *duplicates))
+                                             *split_line[10:14], *duplicates))
+                # locust_file.write(fmt.format(cmpnt_no, cmpnt_no, 1, cmpnt_no, 0, 0, 0, 0, 8, 0,
+                #                              tet_counter, *split_line[11:14], *duplicates))
 
     # End EBLOCK processing
     locust_file.write('/wb,elem,end\n')
@@ -83,9 +83,13 @@ def prepare_locust_wall(cdb_fname, locust_fname):
 
 
 def prepare_continuous_wall(csv_fname, dat_fname):
+    """
+    This function reads in a CSV file and outputs a DAT file with 
+    the RZ coordinates of a continuous wall.
+    """
     with open(csv_fname, 'r') as file:
         lines = file.readlines()
-    
+
     # Initialize variables for the different sections
     main_wall_coords = []
     lower_dome_coords = []
@@ -114,14 +118,6 @@ def prepare_continuous_wall(csv_fname, dat_fname):
     plot_section(ax, "Lower Dome", lower_dome_coords)
     plot_section(ax, "Upper Dome", upper_dome_coords)
 
-    # Set plot labels and legend
-    ax.set_xlabel("R (mm)")
-    ax.set_ylabel("Z (mm)")
-    ax.legend()
-    ax.set_title("Continuous Wall and Domes")
-    ax.grid(True)
-    ax.set_aspect("equal")
-
     continuous_wall_coords = []
     continuous_wall_coords.append((main_wall_coords[0][0], 0))
     continuous_wall_coords.extend(main_wall_coords[0:7])
@@ -143,8 +139,15 @@ def prepare_continuous_wall(csv_fname, dat_fname):
     print(continuous_wall_coords)
 
     plot_section(ax, "Continuous Wall", continuous_wall_coords)
+    # Set plot labels and legend
+    ax.set_xlabel("R (mm)")
+    ax.set_ylabel("Z (mm)")
+    ax.legend()
+    ax.set_title("Continuous Wall and Domes")
+    ax.grid(True)
+    ax.set_aspect("equal")
 
-    with open(dat_fname, 'w') as dat_file:
+    with open(dat_fname, 'w', encoding='utf-8') as dat_file:
         for r, z in continuous_wall_coords:
             dat_file.write(f"{r:8.6f} {z:8.6f}\n")
 
@@ -160,7 +163,9 @@ def plot_section(ax, name, coords):
 if __name__ == "__main__":
     tic = time.time()
     REPOSITORY_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    CDB_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "Stepmesh.cdb")
+    # CDB_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "Stepmesh.cdb")
+    CDB_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "Stepmesh_1.cdb")
+    # LOCUST_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068_old.cdb.locust")
     LOCUST_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068.cdb.locust")
     prepare_locust_wall(CDB_FNAME, LOCUST_FNAME)
     CSV_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR68_2D_Wall.csv")
