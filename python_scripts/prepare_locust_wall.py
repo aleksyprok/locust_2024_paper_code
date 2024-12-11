@@ -157,8 +157,9 @@ def plot_section(ax, name, coords):
     """Helper function to plot a section with annotated indices."""
     r_values, z_values = zip(*coords)
     ax.plot(r_values, z_values, marker='o', label=name)
-    for idx, (r, z) in enumerate(coords):
-        ax.annotate(str(idx), (r, z), textcoords="offset points", xytext=(5, -5), fontsize=8)
+    if name == "Continuous Wall":
+        for idx, (r, z) in enumerate(coords):
+            ax.annotate(str(idx), (r, z), textcoords="offset points", xytext=(5, -5), fontsize=8)
 
 if __name__ == "__main__":
     tic = time.time()
@@ -167,7 +168,7 @@ if __name__ == "__main__":
     CDB_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "Stepmesh_1.cdb")
     # LOCUST_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068_old.cdb.locust")
     LOCUST_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068.cdb.locust")
-    prepare_locust_wall(CDB_FNAME, LOCUST_FNAME)
+    # prepare_locust_wall(CDB_FNAME, LOCUST_FNAME)
     CSV_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR68_2D_Wall.csv")
     DAT_FNAME = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068_wall.dat")
     prepare_continuous_wall(CSV_FNAME, DAT_FNAME)

@@ -38,14 +38,16 @@ SPECIAL_NODES = (16, 55, 138, 178)
 def calc_energy_flux(run_i, output_dir_i,
                      remap_phi_n=None,
                      previous_run=None,
-                     free_space=True):
+                     free_space=True,
+                     wall_path=WALL_PATH,
+                     special_nodes=SPECIAL_NODES):
     """
     This function calculates the energy flux for a given run.
     And plots some of the data along the way.
     """
     os.makedirs(output_dir_i, exist_ok=True)
-    run_i.init_wall(WALL_PATH,
-                    special_nodes=SPECIAL_NODES)
+    run_i.init_wall(wall_path,
+                    special_nodes=special_nodes)
     run_i.init_markers(remap_phi_n=remap_phi_n)
     run_i.init_flux(num_grid_points_1d=NUM_GRID_POINTS_1D,
                     num_grid_points_2d=NUM_GRID_POINTS_2D,
@@ -680,6 +682,177 @@ def spr_045_14_vs_spr_045_16():
     fig.savefig(output_path + '.png', bbox_inches='tight', dpi=300)
     plt.close('all')
 
+def spr_068_spr_045_ripple_scan():
+    """
+    This function plots the ripple runs for SPR-068-7 and SPR-045-14 and SPR-045-16.
+    """
+    def create_csv_ripple():
+        # First we need to filter the ripple runs
+        runs = []
+        for run_i in all_runs:
+            print(run_i.dir_path)
+            if run_i.log.analytic_ripple:
+                runs.append(run_i)
+        # Next sort the runs by rcoil and ncoil
+        # runs.sort(key=lambda x: (x.log.eqdsk_fname,x.log.ncoil, x.log.rcoil))
+        runs.sort(key=lambda x: (x.log.ncoil, x.log.rcoil))
+        runs.sort(key=lambda x: x.log.eqdsk_fname, reverse=True)
+
+        runs_metadata = []
+        for i, run_i in enumerate(runs):
+            if "SPR-045-14" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-045-14"
+                wall_path = os.path.join(REPOSITORY_PATH, "input_data", "SPP-001_wall.dat")
+                special_nodes = (16, 55, 138, 178)
+            elif "SPR-045-16" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-045-16"
+                special_nodes = (16, 55, 138, 178)
+                wall_path = os.path.join(REPOSITORY_PATH, "input_data", "SPP-001_wall.dat")
+            elif "SPR-068-7" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-068-7"
+                special_nodes = (4, 27, 40, 63)
+                wall_path = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068_wall.dat")
+            else:
+                raise ValueError("Could not determine run type")
+            output_dir_i = os.path.join(output_dir, spr_string,
+                                        f"rcoil_{run_i.log.rcoil}_ncoil_{run_i.log.ncoil}")
+            if i==0:
+                calc_energy_flux(run_i, output_dir_i,
+                                 remap_phi_n=run_i.log.ncoil,
+                                 wall_path=wall_path,
+                                 special_nodes=special_nodes)
+            else:
+                calc_energy_flux(run_i, output_dir_i,
+                                 remap_phi_n=run_i.log.ncoil,
+                                 previous_run=runs[i-1],
+                                 wall_path=wall_path,
+                                 special_nodes=special_nodes)
+            runs_metadata.append([run_i.log.ncoil,
+                                  run_i.log.rcoil,
+                                  run_i.flux.max_energy_2d,
+                                  run_i.flux.total_energy,
+                                  run_i.flux.conf_band_2d,
+                                  run_i.flux.conf_band_total,
+                                  run_i.flux.h_phi,
+                                  run_i.flux.h_theta_2d,
+                                  spr_string,
+                                  run_i.log.pinj])
+        columns = ['ncoil', 'rcoil', 'max_energy_flux', 'total_energy_flux', 'conf_band_2d',
+                   'conf_band_total', 'h_phi', 'h_theta_2d', 'spr_string', 'pinj']
+        df = pd.DataFrame(runs_metadata, columns=columns)
+        df.to_csv(os.path.join(output_dir, 'spr_068_spr_045_ripple_scan.csv'))
+
+    def create_csv_axisymmetric():
+        # First we need to filter the axisymmetric runs
+        runs = []
+        for run_i in all_runs:
+            if run_i.log.axisymmetric:
+                runs.append(run_i)
+        runs.sort(key=lambda x: (x.log.eqdsk_fname), reverse=True)
+
+        runs_metadata = []
+        for i, run_i in enumerate(runs):
+            if "SPR-045-14" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-045-14"
+                wall_path = os.path.join(REPOSITORY_PATH, "input_data", "SPP-001_wall.dat")
+                special_nodes = (16, 55, 138, 178)
+            elif "SPR-045-16" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-045-16"
+                wall_path = os.path.join(REPOSITORY_PATH, "input_data", "SPP-001_wall.dat")
+                special_nodes = (16, 55, 138, 178)
+            elif "SPR-068-7" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-068-7"
+                special_nodes = (4, 27, 40, 63)
+                wall_path = os.path.join(REPOSITORY_PATH, "input_data", "SPR-068_wall.dat")
+            else:
+                raise ValueError("Could not determine run type")
+            output_dir_i = os.path.join(output_dir,
+                                        spr_string)
+            if i==0:
+                calc_energy_flux(run_i, output_dir_i,
+                                 wall_path=wall_path,
+                                 special_nodes=special_nodes)
+            else:
+                calc_energy_flux(run_i, output_dir_i,
+                                 previous_run=runs[i-1],
+                                 wall_path=wall_path,
+                                 special_nodes=special_nodes)
+            runs_metadata.append([run_i.log.ncoil,
+                                  run_i.log.rcoil,
+                                  run_i.flux.max_energy_1d,
+                                  run_i.flux.total_energy,
+                                  run_i.flux.conf_band_1d,
+                                  run_i.flux.conf_band_total,
+                                  run_i.flux.h_phi,
+                                  run_i.flux.h_theta_1d,
+                                  spr_string,
+                                  run_i.log.pinj])
+        columns = ['ncoil', 'rcoil', 'max_energy_flux', 'total_energy_flux', 'conf_band_2d',
+                   'conf_band_total', 'h_phi', 'h_theta_1d', 'spr_string', 'pinj']
+        df = pd.DataFrame(runs_metadata, columns=columns)
+        df.to_csv(os.path.join(output_dir, 'spr_068_spr_045_axisymmetric_scan.csv'))
+
+    runs_path = os.path.join(REPOSITORY_PATH, "output_data",
+                             "spr_068_spr_045_ripple_scan")
+    all_runs = run.create_runs_list(runs_path)
+    make_csv = False
+    save_axisymmetric = False
+    output_dir = os.path.join(REPOSITORY_PATH, "plots", "spr_068_spr_045_ripple_scan")
+    if make_csv:
+        create_csv_ripple()
+    df_r = pd.read_csv(os.path.join(output_dir, 'spr_068_spr_045_ripple_scan.csv'))
+    output_dir = os.path.join(REPOSITORY_PATH, "plots", "spr_068_spr_045_axisymmetric_scan")
+    if save_axisymmetric:
+        create_csv_axisymmetric()
+    df_a = pd.read_csv(os.path.join(output_dir, 'spr_068_spr_045_axisymmetric_scan.csv'))
+    linestyles = ['-', '--', ':']
+    colours = ['tab:blue', 'tab:orange', 'tab:green']
+    spr_strings = ['SPR-045-14', 'SPR-045-16', 'SPR-068-7']
+    fig, axs = plt.subplots(1, 2)
+    fig_size = fig.get_size_inches()
+    fig_size[0] *= 2
+    fig.set_size_inches(fig_size)
+    for i, spr_string in enumerate(spr_strings):
+        rcoils = df_r[df_r.spr_string == spr_string].sort_values(by='rcoil').rcoil.values
+        max_energy_flux = \
+            df_r[df_r.spr_string == spr_string].sort_values(by='rcoil').max_energy_flux.values
+        total_energy_flux = \
+            df_r[df_r.spr_string == spr_string].sort_values(by='rcoil').total_energy_flux.values /\
+            df_r[df_r.spr_string == spr_string].sort_values(by='rcoil').pinj.values[0] * 100
+        conf_band_2d = \
+            df_r[df_r.spr_string == spr_string].sort_values(by='rcoil').conf_band_2d.values
+        conf_band_total = \
+            df_r[df_r.spr_string == spr_string].sort_values(by='rcoil').conf_band_total.values / \
+            df_r[df_r.spr_string == spr_string].sort_values(by='rcoil').pinj.values[0] * 100
+        axs[0].errorbar(rcoils, max_energy_flux, yerr=conf_band_2d,
+                        label=spr_string,
+                        linestyle=linestyles[i],
+                        color=colours[i])
+        axs[0].axhline(y=df_a[df_a.spr_string == spr_string].max_energy_flux.values[0],
+                       color='k',
+                       linestyle=linestyles[i])
+        axs[0].legend()
+        axs[1].errorbar(rcoils, total_energy_flux, yerr=conf_band_total,
+                        label=spr_string,
+                        linestyle=linestyles[i],
+                        color=colours[i])
+        axs[1].axhline(y=df_a[df_a.spr_string == spr_string].total_energy_flux.values[0] /
+                         df_a[df_a.spr_string == spr_string].pinj.values[0] * 100,
+                       color='k',
+                       linestyle=linestyles[i])
+        axs[1].legend()
+    axs[0].set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
+    axs[1].set_ylabel(r'Alpha Power Lost [%]')
+    fig.suptitle('TF Ripple Field Results')
+    for i in range(2):
+        axs[i].set_xlabel(r'Major radius of TF coil outer limb ($R_{outer}$) [m]')
+        axs[i].set_yscale('log')
+    output_path = os.path.join(output_dir, 'max_and_total_flux_vs_rcoil')
+    fig.savefig(output_path + ".pdf", bbox_inches='tight')
+    fig.savefig(output_path + ".png", bbox_inches='tight',
+                dpi=300)
+    plt.close(fig)
+
 def plot_background_plasma_curves():
     """
     This function plots the background plasma curves to produce the 
@@ -955,12 +1128,13 @@ if __name__ == "__main__":
     # plot_rmp_runs(RUNS)
     # plot_rmp_distribution(RUNS)
     # plot_rwm_runs(RUNS)
-    plot_background_plasma_curves()
+    # plot_background_plasma_curves()
     # ripple_check.plot_ripple_field()
     # paper_plots_extra.tf_coil_inner_limb_scan()
     # spr_045_14_vs_spr_045_16()
     # plot_hotpost_distributions()
     # plot_magnetic_flux_surfaces()
+    spr_068_spr_045_ripple_scan()
 
     end_time = time.time()
     print(f"Time taken: {end_time - start_time:.2e} seconds")

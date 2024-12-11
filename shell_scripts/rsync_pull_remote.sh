@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # REMOTE_DIRECTORY="ir-prok1@login-gpu.hpc.cam.ac.uk:/rds/project/rds-aSo1XX0UOlw/ir-prok1/GitHub/locust_2024_paper_code/input_data"
-REMOTE_DIRECTORY="aprokopy@login.leonardo.cineca.it:/leonardo_scratch/large/userexternal/aprokopy/locust.STEP/OutputFiles/lrdn0514"
+REMOTE_DIRECTORY="aprokopy@login.leonardo.cineca.it:/leonardo_scratch/large/userexternal/aprokopy/locust.STEP/OutputFiles/spr_068_spr_045_ripple_scan"
 OUTPUT_DATA_DIR="output_data"
 RSYNC_OPTIONS="-avHhe ssh --progress"
 

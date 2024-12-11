@@ -500,5 +500,5 @@ if __name__ == "__main__":
 
     # tf_coil_inner_limb_scan()
     # poincare_rmp_toggle_i3dr_scan()
-    # csv_of_key_values()
-    plot_divb_pcolourmesh()
+    csv_of_key_values()
+    # plot_divb_pcolourmesh()
