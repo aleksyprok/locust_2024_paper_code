@@ -1,7 +1,7 @@
 #!/bin/bash
 
-device="csd3"
-# device="leonardo"
+# device="csd3"
+device="leonardo"
 # device="sdcc"
 tokamak="STEP"
 
@@ -13,7 +13,7 @@ if [[ $device == "csd3" ]]; then
     time="36:00:00"
     ngpu=4
 elif [[ $device == "leonardo" ]]; then
-    account="FUAL7_UKAEA_ML"
+    account="FUAL8_UKAEA_ML"
     partition="boost_fua_prod"
     time="24:00:00"
     ngpu=4
@@ -39,8 +39,8 @@ cat > job.sbatch << EOF
 #SBATCH --mail-user=alex.prokopyszyn@ukaea.uk
 #SBATCH --output=test_dmtcp_%A_%a.out
 #SBATCH --error=test_dmtcp_%A_%a.err
-#SBATCH --ntasks=248
-#SBATCH --array=0-247
+#SBATCH --ntasks=30
+#SBATCH --array=0-4
 #SBATCH --exclusive
 #SBATCH -p $partition
 
