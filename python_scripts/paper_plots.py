@@ -694,9 +694,9 @@ def spr_068_spr_045_ripple_scan():
             if run_i.log.analytic_ripple:
                 runs.append(run_i)
         # Next sort the runs by rcoil and ncoil
-        # runs.sort(key=lambda x: (x.log.eqdsk_fname,x.log.ncoil, x.log.rcoil))
-        runs.sort(key=lambda x: (x.log.ncoil, x.log.rcoil))
-        runs.sort(key=lambda x: x.log.eqdsk_fname, reverse=True)
+        runs.sort(key=lambda x: (x.log.eqdsk_fname,x.log.ncoil, x.log.rcoil))
+        # runs.sort(key=lambda x: (x.log.ncoil, x.log.rcoil))
+        # runs.sort(key=lambda x: x.log.eqdsk_fname, reverse=True)
 
         runs_metadata = []
         for i, run_i in enumerate(runs):
@@ -793,7 +793,7 @@ def spr_068_spr_045_ripple_scan():
         df.to_csv(os.path.join(output_dir, 'spr_068_spr_045_axisymmetric_scan.csv'))
 
     runs_path = os.path.join(REPOSITORY_PATH, "output_data",
-                             "spr_068_spr_045_ripple_scan")
+                             "spr_068_spr_045_ripple_scan_extra")
     all_runs = run.create_runs_list(runs_path)
     make_csv = False
     save_axisymmetric = False
@@ -858,7 +858,7 @@ def plot_background_plasma_curves():
     This function plots the background plasma curves to produce the 
     density temperature, safety factor and reaction rate plots in the paper.
     """
-    spr_string = 'SPR-068-7'
+    spr_string = 'SPR-068-RV'
     cdf_filename = os.path.join(REPOSITORY_PATH, "input_data", f"profiles_{spr_string}.CDF")
     psin, ti, te, ne, nd, nt = prepare_profiles.read_cdf_file(cdf_filename)
     gfile_path = os.path.join(REPOSITORY_PATH, "input_data", f'{spr_string}.eqdsk')
