@@ -13,4 +13,6 @@ import numpy as np
 #     data = np.loadtxt(partciles_path,
 #                       skiprows=2)
 #     data[:, 3:6] *= 0.8
-#     np.savetxt(partciles_path, data)
+#     fmt = ['%13.6E'] * data.shape[1]
+#     header = '1.0\n1.0'
+#     np.savetxt(partciles_path, data, fmt=fmt, header=header, comments='')
