@@ -19,9 +19,8 @@ tokamak="STEP"
 input_dir="$(pwd)/../input_data"
 home_dir=$HOME
 prec_file=$home_dir"/locust/prec_mod.f90"
-mesh_file="SPP-001-1.cdb.locust"
 run_name="FEC_2024"
-spr_strings_unique=("SPR-045-14" "SPR-045-16" "SPR-068-7")
+spr_strings_unique=("SPR-045-14" "SPR-045-16" "SPR-068-7" "SPR-068-045" "SPR-068-RV")
 
 niter=1
 threadsPerBlock=256
@@ -44,7 +43,7 @@ rwm_control=0
 rmp=0
 spr_string="none"
 dplot=0
-timax="10.0_gpu"
+timax="0.75_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
 run_category=1
@@ -88,7 +87,7 @@ rwm_control=0
 rmp=0
 spr_string="SPR-045-16"
 dplot=0
-timax="10.0_gpu"
+timax="0.75_gpu"
 unbor=1000
 dt0="1.0e-06_gpu"
 run_category=2
@@ -534,16 +533,16 @@ for ((n=0; n<num_runs; n++)); do
 
     echo "n="$n
     # If run category is not x skip
-    if [[ ${run_categories[$n]} -ge 3 ]]; then
+    if [[ ${run_categories[$n]} -ge 2 ]]; then
         continue
     fi
-    if [[ ${spr_strings[$n]} != "SPR-068-7" ]]; then
-        continue
-    fi
-    if [[ ${spr_strings[$n]} != "SPR-068-7" ]]; then
+    if [[ ${spr_strings[$n]} == *"SPR-068"* ]]; then
+        mesh_file="SPR-068.cdb.locust"
+    elif [[ ${spr_strings[$n]} == *"SPR-045"* ]]; then
         mesh_file="SPP-001-1.cdb.locust"
     else
-        mesh_file="SPR-068.cdb.locust"
+        echo "Error: No matching case found for ${spr_strings[$n]}" >&2
+        exit 1
     fi
     rsync -avh \
     $input_dir"/"$mesh_file \
@@ -596,7 +595,7 @@ for ((n=0; n<num_runs; n++)); do
 
 
     FLAGS_BASE="-DCONLY -DPFCMOD -DTOKHEAD -DFSTATE -DLEIID=6 -DSTDOUT \
-                -DSMALLEQ -DOPENTRACK -DOPENTERM -DPSIT=0.7 \
+                -DSMALLEQ -DOPENTRACK -DOPENTERM -DOPENMESH -DPSIT=0.7 \
                 -DNOTUNE -DUNBOR="$unbor" \
                 -DTETALL -DSOLCOL \
                 -DRFORCE -DBP -DTIMAX="$timax" -DWREAL -DWLIST"
@@ -691,7 +690,7 @@ for ((n=0; n<num_runs; n++)); do
     SRC="file_profile_Ti = 'profile_Ti_file' ! apkp"
     DST="file_profile_Ti = 'profile_"$spr_string"_Ti.dat'"
     sed -i "s|$SRC|$DST|g" $prec_file
-    if [[ $spr_string == "SPR-068-7" ]]; then
+    if [[ $spr_string == *"SPR-068"* ]]; then
         SRC="R0F    = 1.2_gpu !0.85_gpu"
         DST="R0F    = 1.8_gpu"
         sed -i "s/$SRC/$DST/g" $prec_file
