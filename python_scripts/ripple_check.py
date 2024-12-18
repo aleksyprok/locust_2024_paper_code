@@ -231,7 +231,7 @@ def total_field(coords, num_coils,
     return b_total
 
 def plot_ripple_field(z1=0, z2=5, x_min=1, x_max=7, n_coords=1000,
-                      num_coils=16, height=30, current=1e6,
+                      num_coils=16, height=20, current=1e6,
                       r_inner=0.75, r_outer=7.5, r0=4.38):
     """
     Function to plot the ripple field along x at y=0 and 
@@ -342,7 +342,6 @@ def plot_ripple_field(z1=0, z2=5, x_min=1, x_max=7, n_coords=1000,
         axs[i].set_title(f'z = {z:.2f} m')
         axs[i].set_yscale('log')
         axs[i].legend()
-    print(np.max(b_ripple[2]))
 
     ylim = axs[0].get_ylim()
     ylim = [1e-8, 1]
