@@ -231,7 +231,7 @@ def total_field(coords, num_coils,
     return b_total
 
 def plot_ripple_field(z1=0, z2=5, x_min=1, x_max=7, n_coords=1000,
-                      num_coils=16, height=20, current=1e6,
+                      num_coils=16, height=30, current=1e6,
                       r_inner=0.75, r_outer=7.5, r0=4.38):
     """
     Function to plot the ripple field along x at y=0 and 
@@ -282,10 +282,13 @@ def plot_ripple_field(z1=0, z2=5, x_min=1, x_max=7, n_coords=1000,
 
     mu0 = 4*np.pi*1e-7
 
-    x_coords = np.linspace(x_min, x_max, n_coords)
-    y_coords = np.zeros_like(x_coords)
+    line_plot_angle = 0*np.pi / (2 * num_coils)
+    r_coords = np.linspace(x_min, x_max, n_coords)
+    x_coords = r_coords * np.cos(line_plot_angle)
+    y_coords = r_coords * np.sin(line_plot_angle)
+    # x_coords = np.linspace(x_min, x_max, n_coords)
+    # y_coords = np.zeros_like(x_coords)
     phi_coords = np.arctan2(y_coords, x_coords)
-    r_coords = np.sqrt(x_coords**2 + y_coords**2)
     b_phi0 = 0.5 * mu0 * current * num_coils / np.pi / r_coords
     simple_outer_ripple = b_phi0 * (r_coords / r_outer)**num_coils
     simple_inner_ripple = b_phi0 * (r_inner / r_coords)**num_coils
@@ -312,13 +315,19 @@ def plot_ripple_field(z1=0, z2=5, x_min=1, x_max=7, n_coords=1000,
         b_ripple = [total_b[0] + np.sin(phi_coords) * b_phi0,
                     total_b[1] - np.cos(phi_coords) * b_phi0,
                     total_b[2]]
-        axs[i].plot(x_coords, b_ripple[1] / b_phi_norm,
+        # b_r_ripple = np.cos(line_plot_angle) * b_ripple[0] + np.sin(line_plot_angle) * b_ripple[1]
+        b_phi_ripple = -np.sin(line_plot_angle) * b_ripple[0] + np.cos(line_plot_angle) * b_ripple[1]
+        axs[i].plot(r_coords, b_phi_ripple / b_phi_norm,
                     label='Numerical')
+        # axs[i].plot(r_coords, np.abs(b_r_ripple) / b_phi_norm,
+        #             label='Numerical')
+        # axs[i].plot(x_coords, b_ripple[1] / b_phi_norm,
+        #             label='Numerical')
         # axs[i].plot(x_coords, simple_outer_ripple / b_phi_norm,
         #             label='Analytic Outer')
         # axs[i].plot(x_coords, simple_inner_ripple / b_phi_norm,
         #             label='Analytic Inner')
-        axs[i].plot(x_coords, combined_simple_ripple / b_phi_norm,
+        axs[i].plot(r_coords, combined_simple_ripple / b_phi_norm,
                     label='Analytic')
         r_values = interpolate_r(gfile, z)
         for r in r_values:
@@ -333,6 +342,7 @@ def plot_ripple_field(z1=0, z2=5, x_min=1, x_max=7, n_coords=1000,
         axs[i].set_title(f'z = {z:.2f} m')
         axs[i].set_yscale('log')
         axs[i].legend()
+    print(np.max(b_ripple[2]))
 
     ylim = axs[0].get_ylim()
     ylim = [1e-8, 1]
