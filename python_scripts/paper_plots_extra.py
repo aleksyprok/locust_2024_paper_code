@@ -9,7 +9,7 @@ import numpy as np
 import netCDF4
 import pandas as pd
 import python_scripts.run as python_scripts_run
-from python_scripts import my_gfile_reader, paper_plots
+from python_scripts import marker_plots, my_gfile_reader, paper_plots, run
 
 def plot_amise_1d(run, output_dir):
     """
@@ -496,9 +496,119 @@ def plot_divb_pcolourmesh():
                     bbox_inches='tight', dpi=300)
         plt.close('all')
 
+def plot_axisymmetric_spr_045_spr_068_rv():
+    """
+    Plot bar charts of the total energy flux and maximum energy flux on the PFCs
+    for SPR-045-14, SPR-045-16, SPR-068-7, SPR-068-045 and SPR-068-RV.
+    """
+    def create_csv_ripple():
+        # First we need to filter the ripple runs
+        runs = []
+        for run_i in all_runs:
+            print(run_i.dir_path)
+            runs.append(run_i)
+        runs.sort(key=lambda x: (x.log.eqdsk_fname))
+
+        runs_metadata = []
+        for i, run_i in enumerate(runs):
+            if "SPR-045-14" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-045-14"
+                wall_path = os.path.join(repo_path, "input_data", "SPP-001_wall.dat")
+                special_nodes = (16, 55, 138, 178)
+                gfile_path = os.path.join(repo_path, "input_data", "SPR-045-14.eqdsk")
+            elif "SPR-045-16" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-045-16"
+                special_nodes = (16, 55, 138, 178)
+                wall_path = os.path.join(repo_path, "input_data", "SPP-001_wall.dat")
+                gfile_path = os.path.join(repo_path, "input_data", "SPR-045-16.eqdsk")
+            elif "SPR-068-7" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-068-7"
+                special_nodes = (4, 27, 40, 63)
+                wall_path = os.path.join(repo_path, "input_data", "SPR-068_wall.dat")
+                gfile_path = os.path.join(repo_path, "input_data", "SPR-068-7.eqdsk")
+            elif "SPR-068-045" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-068-045"
+                special_nodes = (4, 27, 40, 63)
+                wall_path = os.path.join(repo_path, "input_data", "SPR-068_wall.dat")
+                gfile_path = os.path.join(repo_path, "input_data", "SPR-068-045.eqdsk")
+            elif "SPR-068-RV" in run_i.log.eqdsk_fname:
+                spr_string = "SPR-068-RV"
+                special_nodes = (4, 27, 40, 63)
+                wall_path = os.path.join(repo_path, "input_data", "SPR-068_wall.dat")
+                gfile_path = os.path.join(repo_path, "input_data", "SPR-068-RV.eqdsk")
+            else:
+                raise ValueError("Could not determine run type")
+            output_dir_i = os.path.join(output_dir, spr_string)
+            os.makedirs(output_dir_i, exist_ok=True)
+            run_i.init_gfile(gfile_path)
+            run_i.init_wall(wall_path)
+            run_i.init_markers()
+            marker_plots.plot_energy_histogram(run_i, output_dir_i)
+            marker_plots.plot_thermalization_time_histogram(run_i, output_dir_i)
+            marker_plots.plot_kde_of_stopped_marker_initial_positions(run_i, output_dir_i)
+            if i==0:
+                paper_plots.calc_energy_flux(run_i, output_dir_i,
+                                             remap_phi_n=run_i.log.ncoil,
+                                             wall_path=wall_path,
+                                             special_nodes=special_nodes)
+            else:
+                paper_plots.calc_energy_flux(run_i, output_dir_i,
+                                             remap_phi_n=run_i.log.ncoil,
+                                             previous_run=runs[i-1],
+                                             wall_path=wall_path,
+                                             special_nodes=special_nodes)
+            runs_metadata.append([run_i.flux.max_energy_1d,
+                                  run_i.flux.total_energy,
+                                  run_i.flux.conf_band_1d,
+                                  run_i.flux.conf_band_total,
+                                  run_i.flux.h_phi,
+                                  run_i.flux.h_theta_1d,
+                                  spr_string,
+                                  run_i.log.pinj])
+        columns = ['max_energy_flux', 'total_energy_flux', 'conf_band_2d',
+                   'conf_band_total', 'h_phi', 'h_theta_2d', 'spr_string', 'pinj']
+        df = pd.DataFrame(runs_metadata, columns=columns)
+        df.to_csv(os.path.join(output_dir, 'spr_068_spr_045_ripple_scan.csv'))
+    repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    runs_path = os.path.join(repo_path, "output_data",
+                             "spr_068_spr_045_RV_axisymmetric_scan_processed")
+    all_runs = run.create_runs_list(runs_path)
+    make_csv = True
+    output_dir = os.path.join(repo_path, "plots", "spr_068_spr_045_RV_axisymmetric_scan")
+    if make_csv:
+        create_csv_ripple()
+    df = pd.read_csv(os.path.join(output_dir, 'spr_068_spr_045_ripple_scan.csv'))
+    fig, axs = plt.subplots(1, 3)
+    fig_size = fig.get_size_inches()
+    fig_size[0] *= 3
+    fig.set_size_inches(fig_size)
+    spr_strings = df.spr_string.values
+    spr_strings[1] = "\n" + spr_strings[1]
+    spr_strings[3] = "\n" + spr_strings[3]
+    max_energy_flux = df.max_energy_flux.values
+    total_energy_flux = df.total_energy_flux.values / df.pinj.values * 100
+    conf_band_2d = df.conf_band_2d.values
+    conf_band_total = df.conf_band_total.values / df.pinj.values * 100
+    pinj = df.pinj.values
+    axs[0].bar(spr_strings, max_energy_flux, yerr=conf_band_2d)
+    axs[1].bar(spr_strings, total_energy_flux, yerr=conf_band_total)
+    axs[2].bar(spr_strings, pinj)
+    axs[0].set_ylabel(r'Max Alpha Particle Energy Flux [MW m$^{-2}$]')
+    axs[1].set_ylabel(r'Alpha Power Lost [%]')
+    axs[2].set_ylabel(r'Alpha Power [MW]')
+    fig.suptitle('Axisymmetric results')
+    # for i in range(2):
+    #     axs[i].set_yscale('log')
+    output_path = os.path.join(output_dir, 'axisymmetric_bars')
+    fig.savefig(output_path + ".pdf", bbox_inches='tight')
+    fig.savefig(output_path + ".png", bbox_inches='tight',
+                dpi=300)
+    plt.close(fig)
+
 if __name__ == "__main__":
 
     # tf_coil_inner_limb_scan()
     # poincare_rmp_toggle_i3dr_scan()
-    csv_of_key_values()
+    # csv_of_key_values()
     # plot_divb_pcolourmesh()
+    plot_axisymmetric_spr_045_spr_068_rv()
