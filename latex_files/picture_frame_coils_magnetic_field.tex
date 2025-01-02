@@ -102,7 +102,7 @@ The inverse rotation matrix is given by
 Let 
 \[\begin{aligned}
     \begin{pmatrix}
-        x'_k \\ y'_k \\ z'_k
+        x_k \\ y_k \\ z_k
     \end{pmatrix} &= \text{R}^{-1}_k
     \begin{pmatrix}
         x \\ y \\ z
@@ -121,17 +121,17 @@ Let
 \end{pmatrix} &= 
 \text{R}_k
 \begin{pmatrix}
-    x'_k \\ y'_k \\ z'_k
+    x_k \\ y_k \\ z_k
 \end{pmatrix} \\
 &= \begin{pmatrix}
-    z'_k\cos(\phi_k)-y'_k\sin(\phi_k)  \\
-    y'_k\cos(\phi_k) +z'_k\sin(\phi_k) \\
-    -x'_k
+    z_k\cos(\phi_k)-y_k\sin(\phi_k)  \\
+    y_k\cos(\phi_k) +z_k\sin(\phi_k) \\
+    -x_k
 \end{pmatrix}.
 \end{aligned}\]
 Hence, the formula for the magnetic field due to the upper wires in the 
  picture-frame coils is given by
-\[\mathbf{B}_{upper,k}(x,y,z) = \text{R}_k\mathbf{B}_{vwire}(x'_k + h'/2, y'_k, z'_k; R_{inner}, R_{outer}, I),\]
+\[\mathbf{B}_{upper,k}(x,y,z) = \text{R}_k\mathbf{B}_{vwire}(x_k + h/2, y_k, z_k; R_{inner}, R_{outer}, I),\]
 where $h$ is the height of the coils.
 
 \section{Magnetic field in picture-frame coils}
@@ -147,8 +147,8 @@ We can model the magnetic field from the vertical wires with
 \[\mathbf{B}_{inner,k}(x,y,z) = \mathbf{B}_{vwire}(x-R_{inner}\cos\phi_k, y-R_{inner}\sin{\phi_k}, z; -h/2, h/2, I),\]
 \[\mathbf{B}_{outer,k}(x,y,z) = \mathbf{B}_{vwire}(x-R_{outer}\cos\phi_k, y-R_{outer}\sin{\phi_k}, z; -h/2, h/2, -I).\]
 We can model the horizontal wires using:
-\[\mathbf{B}_{upper,k}(x,y,z) = \text{R}_k\mathbf{B}_{vwire}(x'_k + h'/2, y'_k, z'_k; R_{inner}, R_{outer}, I),\]
-\[\mathbf{B}_{lower,k}(x,y,z) = \text{R}_k\mathbf{B}_{vwire}(x'_k - h'/2, y'_k, z'_k; R_{inner}, R_{outer}, -I).\]
+\[\mathbf{B}_{upper,k}(x,y,z) = \text{R}_k\mathbf{B}_{vwire}(x_k + h/2, y_k, z_k; R_{inner}, R_{outer}, I),\]
+\[\mathbf{B}_{lower,k}(x,y,z) = \text{R}_k\mathbf{B}_{vwire}(x_k - h/2, y_k, z_k; R_{inner}, R_{outer}, -I).\]
 Hence, the full magnetic field from all the TF coils is given by
 \[\boxed{\mathbf{B}(x, y, z) = \sum_{k=0}^{N_{coil}-1}\mathbf{B}_{inner,k} + \mathbf{B}_{outer,k} + \mathbf{B}_{lower,k} + \mathbf{B}_{upper,k}.}\]
 
