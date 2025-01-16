@@ -20,7 +20,8 @@ input_dir="$(pwd)/../input_data"
 home_dir=$HOME
 prec_file=$home_dir"/locust/prec_mod.f90"
 run_name="FEC_2024"
-spr_strings_unique=("SPR-045-14" "SPR-045-16" "SPR-068-7" "SPR-068-045" "SPR-068-RV")
+# spr_strings_unique=("SPR-045-14" "SPR-045-16" "SPR-068-7" "SPR-068-045" "SPR-068-RV")
+spr_strings_unique=("SPR-045-14" "SPR-045-16" "SPR-068-7")
 
 niter=1
 threadsPerBlock=256
@@ -94,7 +95,8 @@ run_category=2
 # ncoils_unique=(12 16 18)
 ncoils_unique=(12)
 # rcoils_unique=("7.0" "7.25" "7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0")
-rcoils_unique=("7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0" "9.25" "9.50")
+# rcoils_unique=("7.5" "7.75" "8.0" "8.25" "8.5" "8.75" "9.0" "9.25" "9.50")
+rcoils_unique=("9.75" "10.00" "10.25" "10.50" "10.75" "11.00" "11.25" "11.50" "11.75")
 for ncoil in "${ncoils_unique[@]}"; do
     for rcoil in "${rcoils_unique[@]}"; do
         for spr_string in "${spr_strings_unique[@]}"; do
@@ -533,7 +535,7 @@ for ((n=0; n<num_runs; n++)); do
 
     echo "n="$n
     # If run category is not x skip
-    if [[ ${run_categories[$n]} -ge 2 ]]; then
+    if [[ ${run_categories[$n]} != 2 ]]; then
         continue
     fi
     if [[ ${spr_strings[$n]} == *"SPR-068"* ]]; then
