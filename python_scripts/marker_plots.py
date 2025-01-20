@@ -71,6 +71,36 @@ def plot_kde_of_stopped_marker_initial_positions(run0, plot_dir):
                 bbox_inches='tight',
                 dpi=300)
     
+def check_toroidal_symmetry(run0, plot_dir):
+    """
+    Checks if the markers are toroidally symmetric.
+    """
+    fig, ax = plt.subplots(1, 3)
+    fig_size = fig.get_size_inches()
+    fig.set_size_inches(fig_size[0] * 3, fig_size[1] * 1)
+    ax[0].hist(run0.markers.stopped.phi0 * 180 / np.pi,
+               weights=run0.markers.stopped.weight * run0.markers.stopped.energy,
+               bins=100)
+    ax[0].set_xlabel('Initial Toroidal Angle [deg]')
+    ax[0].set_ylabel('Weighted Number of Markers')
+    ax[0].set_title('Initial Toroidal Angle Distribution')
+    ax[1].hist(run0.markers.stopped.phi * 180 / np.pi,
+               weights=run0.markers.stopped.weight * run0.markers.stopped.energy,
+               bins=100)
+    ax[1].set_xlabel('Final Toroidal Angle [deg]')
+    ax[1].set_ylabel('Weighted Number of Markers')
+    ax[1].set_title('Final Toroidal Angle Distribution')
+    ax[2].hist(run0.markers.stopped.s_phi,
+               weights=run0.markers.stopped.weight * run0.markers.stopped.energy,
+               bins=100)
+    ax[2].set_xlabel('Final toroidal distance [m]')
+    ax[2].set_ylabel('Weighted Number of Markers')
+    ax[2].set_title('Final toroidal distance distribution')
+
+    fig.savefig(os.path.join(plot_dir, 'toroidal_symmetry.png'),
+                bbox_inches='tight',
+                dpi=300)
+    
 if __name__ == '__main__':
     repo_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     runs_path = os.path.join(repo_path, "output_data",
@@ -101,6 +131,7 @@ if __name__ == '__main__':
             plot_energy_histogram(run_i, output_dir_i)
             plot_thermalization_time_histogram(run_i, output_dir_i)
             plot_kde_of_stopped_marker_initial_positions(run_i, output_dir_i)
+            check_toroidal_symmetry(run_i, output_dir_i)
         else:
             output_dir = os.path.join(repo_path, "plots", "spr_068_spr_045_ripple_scan")
             output_dir_i = os.path.join(output_dir, spr_string,
@@ -111,3 +142,4 @@ if __name__ == '__main__':
             plot_energy_histogram(run_i, output_dir_i)
             plot_thermalization_time_histogram(run_i, output_dir_i)
             plot_kde_of_stopped_marker_initial_positions(run_i, output_dir_i)
+            check_toroidal_symmetry(run_i, output_dir_i)
