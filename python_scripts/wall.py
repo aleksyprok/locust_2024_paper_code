@@ -295,4 +295,4 @@ class ScaleFactor2D:
 
         r_array = self.r_from_s_theta_fun(s_theta % self.s_nodes[-1])
         r_array = np.repeat(r_array[:, np.newaxis], len(s_phi), axis=1)
-        return self.cr / r_array
+        return self.cr / r_array.T
