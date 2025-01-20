@@ -793,7 +793,7 @@ def spr_068_spr_045_ripple_scan():
         df.to_csv(os.path.join(output_dir, 'spr_068_spr_045_axisymmetric_scan.csv'))
 
     runs_path = os.path.join(REPOSITORY_PATH, "output_data",
-                             "spr_068_spr_045_ripple_scan_extra")
+                             "spr_068_spr_045_ripple_scan")
     all_runs = run.create_runs_list(runs_path)
     make_csv = False
     save_axisymmetric = False
@@ -847,6 +847,8 @@ def spr_068_spr_045_ripple_scan():
     for i in range(2):
         axs[i].set_xlabel(r'Major radius of TF coil outer limb ($R_{outer}$) [m]')
         axs[i].set_yscale('log')
+        axs[i].grid()
+        axs[i].minorticks_on()
     output_path = os.path.join(output_dir, 'max_and_total_flux_vs_rcoil')
     fig.savefig(output_path + ".pdf", bbox_inches='tight')
     fig.savefig(output_path + ".png", bbox_inches='tight',
