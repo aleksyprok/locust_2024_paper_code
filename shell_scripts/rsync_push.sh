@@ -8,7 +8,9 @@ OUTPUT_DATA_DIR="output_data"
 # Define destination directories
 GOOGLE_DRIVE_INPUT_DATA_DIR="/Users/alexander.prokopyszyn/Library/CloudStorage/GoogleDrive-githubburner002@gmail.com/My Drive/locust_2024_paper_code/input_data"
 GOOGLE_DRIVE_PLOTS_DIR="/Users/alexander.prokopyszyn/Library/CloudStorage/GoogleDrive-githubburner002@gmail.com/My Drive/locust_2024_paper_code/plots"
-ONEDRIVE_OUTPUT_DATA_DIR="/Users/alexander.prokopyszyn/Library/CloudStorage/OneDrive-ScienceandTechnologyFacilitiesCouncil/GitHub/locust_2024_paper_code_output_data/output_data"
+# ONEDRIVE_OUTPUT_DATA_DIR="/Users/alexander.prokopyszyn/Library/CloudStorage/OneDrive-ScienceandTechnologyFacilitiesCouncil/GitHub/locust_2024_paper_code_output_data/output_data"
+ONEDRIVE_OUTPUT_DATA_DIR="/Users/alexander.prokopyszyn/Library/CloudStorage/GoogleDrive-aleksyprok@gmail.com/My Drive/GitHub/output_data"
+
 
 # Rsync options
 RSYNC_OPTIONS="-avh --progress"
