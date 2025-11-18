@@ -4,7 +4,7 @@ The codebase associated with our research, as detailed in the paper available fo
 
 ### External Data Storage
 
-To keep this repository manageable, we have stored large datasets on Google Drive and OneDrive. You can access the necessary data through the following links:
+To keep this repository manageable, we have stored large datasets on Google Drive. You can access the necessary data through the following links:
 
 - **Input Data and Plots**: Available [here](https://drive.google.com/drive/folders/19O-Q3VZ2t9bzik9bUeZ-YEsVlpDDwWD7?usp=share_link) (approximately 5 GB).
 - **Simulation Output Data**: Available [here](https://drive.google.com/drive/folders/1p03zr69ub71Ze27mCTW9Ck-_DhoqD8p5?usp=sharing) (approximately 30 GB).
